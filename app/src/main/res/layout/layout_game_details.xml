@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/layout_game_details_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="1dp">
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_0"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_1"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_2"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="1dp">
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_3"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_4"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_5"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="1dp">
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_6"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_7"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+
+                    <ImageView
+                        android:id="@+id/layout_game_details_field_8"
+                        android:layout_width="@dimen/game_field"
+                        android:layout_height="@dimen/game_field"
+                        android:layout_margin="1dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:padding="16dp"
+                tools:text="State: waiting for player to join" />
+
+            <TextView
+                android:id="@+id/layout_game_details_join_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@color/colorAccent"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/join"
+                android:textColor="@android:color/white"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </RelativeLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</android.support.design.widget.CoordinatorLayout>

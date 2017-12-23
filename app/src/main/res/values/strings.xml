@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Solidity TicTacToe</string>
+    <string name="join">Join</string>
 </resources>
