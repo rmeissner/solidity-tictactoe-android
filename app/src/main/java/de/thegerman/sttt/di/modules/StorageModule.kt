@@ -13,6 +13,9 @@ class StorageModule {
     @Provides
     @Singleton
     fun providesDb(@ApplicationContext context: Context) =
-            Room.databaseBuilder(context, AppDb::class.java, AppDb.DB_NAME)
-                    .build()
+            Room.databaseBuilder(context, AppDb::class.java, AppDb.DB_NAME).build()
+
+    @Provides
+    @Singleton
+    fun providesGameDao(db: AppDb) = db.gameDao()
 }

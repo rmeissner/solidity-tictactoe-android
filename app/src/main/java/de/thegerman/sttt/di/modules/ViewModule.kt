@@ -10,6 +10,7 @@ import dagger.Module
 import dagger.Provides
 import de.thegerman.sttt.di.annotations.ForView
 import de.thegerman.sttt.di.annotations.ViewContext
+import de.thegerman.sttt.ui.overview.OverviewContract
 
 @Module
 class ViewModule(private val context: Context) {
@@ -21,6 +22,10 @@ class ViewModule(private val context: Context) {
     @Provides
     @ForView
     fun providesLinearLayoutManager() = LinearLayoutManager(context)
+
+    @Provides
+    @ForView
+    fun providesOverviewContract(provider: ViewModelProvider) = provider[OverviewContract::class.java]
 
     @Provides
     @ForView
