@@ -109,10 +109,20 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/layout_game_details_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:padding="16dp"
+                android:padding="8dp"
+                tools:text="State: waiting for player to join" />
+
+            <TextView
+                android:id="@+id/layout_game_details_last_move"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_game_details_state"
+                android:layout_centerHorizontal="true"
+                android:padding="8dp"
                 tools:text="State: waiting for player to join" />
 
             <TextView

@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Solidity TicTacToe</string>
     <string name="join">Join</string>
+    <string name="open_game">Open Game</string>
+    <string name="enter_game_id">Enter Game ID</string>
+    <string name="waiting_for_player">Waiting for player to join</string>
+    <string name="player_x_turn">Player %ss turn</string>
+    <string name="player_x_won">Player %s won the game</string>
+    <string name="game_over_tie">Game ended in a Tie</string>
+    <string name="last_move_at">Last move at: %s</string>
 </resources>

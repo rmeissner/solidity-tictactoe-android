@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <EditText
+                    android:id="@+id/layout_game_overview_game_id_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/enter_game_id"/>
+
+                <TextView
+                    android:id="@+id/layout_game_overview_open_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:gravity="end"
+                    android:padding="16dp"
+                    android:text="@string/open_game"
+                    android:textColor="@color/colorAccent" />
+            </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
