@@ -23,25 +23,6 @@
           "type": "uint256"
         }
       ],
-      "name": "currentGameSate",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint8"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "gameIndex",
-          "type": "uint256"
-        }
-      ],
       "name": "lastMove",
       "outputs": [
         {
@@ -88,7 +69,7 @@
           "type": "uint256"
         }
       ],
-      "name": "currentPlayerIndex",
+      "name": "senderPlayerIndex",
       "outputs": [
         {
           "name": "",
@@ -107,11 +88,58 @@
           "type": "uint256"
         }
       ],
+      "name": "currentPlayerIndex",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "gameIndex",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancel",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "gameIndex",
+          "type": "uint256"
+        }
+      ],
       "name": "getGameInfo",
       "outputs": [
         {
           "name": "",
           "type": "uint64"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "STATE_PLAYING",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
         }
       ],
       "payable": false,
@@ -139,6 +167,34 @@
     },
     {
       "constant": true,
+      "inputs": [],
+      "name": "STATE_FINISHED",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "gamesCounter",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
       "inputs": [
         {
           "name": "gameIndex",
@@ -146,6 +202,20 @@
         }
       ],
       "name": "currentMoves",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "STATE_WAITING",
       "outputs": [
         {
           "name": "",
@@ -172,6 +242,20 @@
       "outputs": [],
       "payable": true,
       "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "STATE_CANCELED",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -203,18 +287,44 @@
       "type": "function"
     },
     {
-      "constant": false,
-      "inputs": [],
-      "name": "create",
-      "outputs": [
+      "constant": true,
+      "inputs": [
         {
-          "name": "",
+          "name": "gameIndex",
           "type": "uint256"
         }
       ],
+      "name": "currentGameState",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "create",
+      "outputs": [],
       "payable": true,
       "stateMutability": "payable",
       "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "gameIndex",
+          "type": "uint256"
+        }
+      ],
+      "name": "GameCreation",
+      "type": "event"
     }
   ]
 }

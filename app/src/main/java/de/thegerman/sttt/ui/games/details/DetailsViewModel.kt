@@ -26,9 +26,8 @@ class DetailsViewModel @Inject constructor(
         it.startWith(Unit).switchMap {
             gameRepository.loadGameDetails(gameId!!)
                     .doOnNext { gameOver.set(it.state > 1) }
-                    .repeatWhen { flatMapForRepeat(it, 10) }
-                    .retryWhen { flatMapForRepeat(it) }
                     .mapToResult()
+                    .repeatWhen { flatMapForRepeat(it, 10) }
         }
     }
 

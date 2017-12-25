@@ -20,4 +20,12 @@
     <string name="enter_password">Enter Password</string>
     <string name="repeat_password">Repeat Password</string>
     <string name="invalid_credentials">Invalid credentials provided!</string>
+    <string name="game_x">Game %s</string>
+    <string name="unlock_screen_title">Unlock Solidity TicTacToe</string>
+    <string name="error_game_info">Game info not available</string>
+    <string name="error_game_info_will_retry">Could not retrieve game info. Will automatically retry after 10 sec!</string>
+    <string name="not_player_of_game">You are not part of this game</string>
+    <string name="you_are_player_x">You are Player %s</string>
+    <string name="setup_account_game">Setup account to join game</string>
+    <string name="game_not_started">Game has not yet started!</string>
 </resources>

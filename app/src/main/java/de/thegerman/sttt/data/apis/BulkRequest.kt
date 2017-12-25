@@ -2,12 +2,13 @@ package de.thegerman.sttt.data.apis
 
 import de.thegerman.sttt.data.apis.models.JsonRpcRequest
 import de.thegerman.sttt.data.apis.models.JsonRpcResult
+import io.reactivex.Observable
 
 open class BulkRequest {
     private val callMap = HashMap<Int, SubRequest<out Any?>>()
 
-    constructor(vararg calls: SubRequest<out Any?>) {
-        calls.forEach { callMapper(it) }
+    constructor(vararg calls: SubRequest<out Any?>?) {
+        calls.forEach { it?.let { callMapper(it) } }
     }
 
     constructor(calls: List<SubRequest<out Any?>>) {
@@ -38,3 +39,6 @@ open class BulkRequest {
         }
     }
 }
+
+fun <R : BulkRequest> EthereumJsonRpcApi.bulk(request: R): Observable<R> =
+        post(request.body()).map { request.parse(it); request }

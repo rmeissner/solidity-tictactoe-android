@@ -123,7 +123,33 @@
                 android:layout_below="@id/layout_game_details_state"
                 android:layout_centerHorizontal="true"
                 android:padding="8dp"
-                tools:text="State: waiting for player to join" />
+                tools:text="Last move made yesterday" />
+
+            <TextView
+                android:id="@+id/layout_game_details_player_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/layout_game_details_setup_button"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_centerHorizontal="true"
+                android:padding="8dp"
+                tools:text="@string/you_are_player_x" />
+
+            <TextView
+                android:id="@+id/layout_game_details_setup_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/layout_game_details_join_button"
+                android:layout_alignParentBottom="true"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_centerHorizontal="true"
+                android:background="@color/colorAccent"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/setup_account_game"
+                android:textColor="@android:color/white"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/layout_game_details_join_button"
@@ -137,7 +163,7 @@
                 android:text="@string/join"
                 android:textColor="@android:color/white"
                 android:visibility="gone"
-                tools:visibility="visible" />
+                tools:visibility="gone" />
         </RelativeLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </android.support.design.widget.CoordinatorLayout>
