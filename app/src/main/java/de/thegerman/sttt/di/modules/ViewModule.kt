@@ -8,10 +8,12 @@ import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.LinearLayoutManager
 import dagger.Module
 import dagger.Provides
-import de.thegerman.sttt.di.annotations.ForView
-import de.thegerman.sttt.di.annotations.ViewContext
-import de.thegerman.sttt.ui.details.DetailsContract
-import de.thegerman.sttt.ui.overview.OverviewContract
+import de.thegerman.sttt.ui.account.setup.AccountSetupContract
+import de.thegerman.sttt.ui.account.unlock.UnlockContract
+import de.thegerman.sttt.ui.games.details.DetailsContract
+import de.thegerman.sttt.ui.games.overview.OverviewContract
+import pm.gnosis.heimdall.common.di.ForView
+import pm.gnosis.heimdall.common.di.ViewContext
 
 @Module
 class ViewModule(private val context: Context) {
@@ -26,11 +28,19 @@ class ViewModule(private val context: Context) {
 
     @Provides
     @ForView
+    fun providesAccountSetupContract(provider: ViewModelProvider) = provider[AccountSetupContract::class.java]
+
+    @Provides
+    @ForView
     fun providesDetailsContract(provider: ViewModelProvider) = provider[DetailsContract::class.java]
 
     @Provides
     @ForView
     fun providesOverviewContract(provider: ViewModelProvider) = provider[OverviewContract::class.java]
+
+    @Provides
+    @ForView
+    fun providesUnlockContract(provider: ViewModelProvider) = provider[UnlockContract::class.java]
 
     @Provides
     @ForView

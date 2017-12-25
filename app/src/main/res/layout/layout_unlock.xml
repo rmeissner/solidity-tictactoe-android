@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,30 +10,34 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/layout_game_overview_game_id_input"
+            android:id="@+id/layout_unlock_password_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
-            android:hint="@string/enter_game_id" />
+            android:hint="@string/enter_password"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/layout_game_overview_open_button"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/layout_unlock_repeat_input"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/layout_game_overview_game_id_input"
-            android:layout_gravity="end"
+            android:layout_below="@id/layout_unlock_password_input"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:padding="16dp"
-            android:text="@string/open_game"
-            android:textColor="@color/colorAccent" />
+            android:layout_marginTop="16dp"
+            android:hint="@string/repeat_password"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <TextView
-            android:id="@+id/layout_game_overview_setup_account_button"
+            android:id="@+id/layout_unlock_unlock_button"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_alignParentBottom="true"
@@ -40,7 +45,9 @@
             android:background="@color/colorAccent"
             android:gravity="center"
             android:padding="16dp"
-            android:text="@string/setup_account"
-            android:textColor="@android:color/white" />
+            android:text="@string/unlock"
+            android:textColor="@android:color/white"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

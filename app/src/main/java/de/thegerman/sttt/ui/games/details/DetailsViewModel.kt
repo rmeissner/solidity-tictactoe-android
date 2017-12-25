@@ -1,4 +1,4 @@
-package de.thegerman.sttt.ui.details
+package de.thegerman.sttt.ui.games.details
 
 import de.thegerman.sttt.data.models.GameInfo
 import de.thegerman.sttt.data.repositories.GameRepository

@@ -1,10 +1,12 @@
 package de.thegerman.sttt.di.components
 
 import dagger.Component
-import de.thegerman.sttt.di.annotations.ForView
 import de.thegerman.sttt.di.modules.ViewModule
-import de.thegerman.sttt.ui.details.DetailsActivity
-import de.thegerman.sttt.ui.overview.OverviewActivity
+import de.thegerman.sttt.ui.account.setup.AccountSetupActivity
+import de.thegerman.sttt.ui.account.unlock.UnlockActivity
+import de.thegerman.sttt.ui.games.details.DetailsActivity
+import de.thegerman.sttt.ui.games.overview.OverviewActivity
+import pm.gnosis.heimdall.common.di.ForView
 
 @ForView
 @Component(
@@ -16,6 +18,8 @@ interface ViewComponent {
         Activities
      */
 
+    fun inject(activity: AccountSetupActivity)
     fun inject(activity: DetailsActivity)
     fun inject(activity: OverviewActivity)
+    fun inject(activity: UnlockActivity)
 }

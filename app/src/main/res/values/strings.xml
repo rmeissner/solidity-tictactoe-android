@@ -8,4 +8,16 @@
     <string name="player_x_won">Player %s won the game</string>
     <string name="game_over_tie">Game ended in a Tie</string>
     <string name="last_move_at">Last move at: %s</string>
+    <string name="setup_account">Setup Account</string>
+    <string name="finish">Finish</string>
+    <string name="enter_mnemonic">Enter Mnemonic</string>
+    <string name="generate_mnemonic">Generate Mnemonic</string>
+    <string name="error_unknown">Unknown error occurred. Try again!</string>
+    <string name="error_mnemonic_unknown">Invalid mnemonic!</string>
+    <string name="error_mnemonic_wrong_word">Not all words are part of the same wordlist!</string>
+    <string name="error_mnemonic_empty">Please enter a mnemonic phrase!</string>
+    <string name="unlock">Unlock</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="invalid_credentials">Invalid credentials provided!</string>
 </resources>

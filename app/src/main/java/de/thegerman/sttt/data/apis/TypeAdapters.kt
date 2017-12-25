@@ -2,7 +2,7 @@ package de.thegerman.sttt.data.apis
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
-import de.thegerman.sttt.data.models.Wei
+import pm.gnosis.models.Wei
 import pm.gnosis.utils.hexAsBigInteger
 import java.math.BigInteger
 

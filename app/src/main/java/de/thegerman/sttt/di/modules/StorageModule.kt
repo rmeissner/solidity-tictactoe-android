@@ -5,7 +5,7 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import de.thegerman.sttt.data.db.AppDb
-import de.thegerman.sttt.di.annotations.ApplicationContext
+import pm.gnosis.heimdall.common.di.ApplicationContext
 import javax.inject.Singleton
 
 @Module

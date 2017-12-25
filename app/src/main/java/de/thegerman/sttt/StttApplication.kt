@@ -4,8 +4,10 @@ import android.content.Context
 import android.support.multidex.MultiDexApplication
 import de.thegerman.sttt.di.components.AppComponent
 import de.thegerman.sttt.di.components.DaggerAppComponent
-import de.thegerman.sttt.di.modules.CoreModule
+import org.spongycastle.jce.provider.BouncyCastleProvider
+import pm.gnosis.heimdall.common.di.modules.CoreModule
 import timber.log.Timber
+import java.security.Security
 
 class StttApplication : MultiDexApplication() {
     val component: AppComponent = DaggerAppComponent.builder()
@@ -15,6 +17,7 @@ class StttApplication : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
+        Security.insertProviderAt(BouncyCastleProvider(), 1)
     }
 
     companion object {

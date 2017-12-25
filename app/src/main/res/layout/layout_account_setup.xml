@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/layout_account_setup_mnemoic_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="start"
+            android:hint="@string/enter_mnemonic"
+            android:lines="5" />
+
+        <TextView
+            android:id="@+id/layout_account_setup_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_account_setup_mnemoic_input"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="end"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:singleLine="true"
+            android:textColor="@color/error"
+            tools:text="Invalid Mnemonic" />
+
+
+        <TextView
+            android:id="@+id/layout_account_setup_generate_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_account_setup_error"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="end"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:padding="16dp"
+            android:text="@string/generate_mnemonic"
+            android:textColor="@color/colorAccent" />
+
+        <TextView
+            android:id="@+id/layout_account_setup_finish_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="end"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:padding="16dp"
+            android:text="@string/finish"
+            android:textColor="@color/colorAccent" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

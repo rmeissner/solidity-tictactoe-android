@@ -1,4 +1,4 @@
-package de.thegerman.sttt.ui.details
+package de.thegerman.sttt.ui.games.details
 
 import android.arch.lifecycle.ViewModel
 import de.thegerman.sttt.data.models.GameInfo
