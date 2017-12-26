@@ -5,9 +5,9 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.text.format.DateUtils
 import android.view.View
+import android.widget.ImageView
 import com.jakewharton.rxbinding2.support.v4.widget.refreshes
 import com.jakewharton.rxbinding2.view.clicks
 import de.thegerman.sttt.R
@@ -18,11 +18,11 @@ import de.thegerman.sttt.di.modules.ViewModule
 import de.thegerman.sttt.ui.account.setup.AccountSetupActivity
 import de.thegerman.sttt.ui.base.InjectedActivity
 import de.thegerman.sttt.utils.subscribeForResult
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.layout_game_details.*
 import pm.gnosis.heimdall.common.utils.snackbar
-import pm.gnosis.heimdall.common.utils.toast
 import pm.gnosis.utils.asDecimalString
 import pm.gnosis.utils.hexAsBigIntegerOrNull
 import timber.log.Timber
@@ -77,10 +77,41 @@ class DetailsActivity : InjectedActivity() {
                     startActivity(AccountSetupActivity.createIntent(this))
                 }, Timber::e)
         disposables += layout_game_details_join_button.clicks()
-                .subscribe({
-                    toast("Join game")
-                }, Timber::e)
+                .compose(viewModel.joinTransformer())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeForResult({
+                    layout_game_details_join_button.visibility = View.GONE
+                }, {
+                    snackbar(layout_game_details_join_button, R.string.error_unknown)
+                    Timber.e(it)
+                })
+        disposables += makeMove(
+                layout_game_details_field_0.clicks().map { 0 },
+                layout_game_details_field_1.clicks().map { 1 },
+                layout_game_details_field_2.clicks().map { 2 },
+                layout_game_details_field_3.clicks().map { 3 },
+                layout_game_details_field_4.clicks().map { 4 },
+                layout_game_details_field_5.clicks().map { 5 },
+                layout_game_details_field_6.clicks().map { 6 },
+                layout_game_details_field_7.clicks().map { 7 },
+                layout_game_details_field_8.clicks().map { 8 }
+                )
     }
+
+    private fun makeMove(vararg inputs: Observable<Int>) =
+            Observable.merge(mutableListOf(*inputs))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext { toggleFields(false) }
+                    .compose(viewModel.makeMoveTransformer())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeForResult({
+                        snackbar(layout_game_details_join_button, getString(R.string.move_published))
+                    }, {
+                        toggleFields(true)
+                        snackbar(layout_game_details_join_button, R.string.error_unknown)
+                        Timber.e(it)
+                    })
+
 
     private fun onGameDetailsError(throwable: Throwable) {
         if (!hasGameInfo) {
@@ -128,20 +159,36 @@ class DetailsActivity : InjectedActivity() {
                 getString(R.string.last_move_at, DateUtils.formatDateTime(this, details.lastMoveAt, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME))
             }
         }
-        updateField(details.field)
+        updateFields(details.fields)
+        toggleFields(details.playerIndex == details.currentPlayer)
     }
 
-    private fun updateField(field: List<Int>) {
-        layout_game_details_field_0.setImageDrawable(fieldDrawable(field.getOrNull(0) ?: 0))
-        layout_game_details_field_1.setImageDrawable(fieldDrawable(field.getOrNull(1) ?: 0))
-        layout_game_details_field_2.setImageDrawable(fieldDrawable(field.getOrNull(2) ?: 0))
-        layout_game_details_field_3.setImageDrawable(fieldDrawable(field.getOrNull(3) ?: 0))
-        layout_game_details_field_4.setImageDrawable(fieldDrawable(field.getOrNull(4) ?: 0))
-        layout_game_details_field_5.setImageDrawable(fieldDrawable(field.getOrNull(5) ?: 0))
-        layout_game_details_field_6.setImageDrawable(fieldDrawable(field.getOrNull(6) ?: 0))
-        layout_game_details_field_7.setImageDrawable(fieldDrawable(field.getOrNull(7) ?: 0))
-        layout_game_details_field_8.setImageDrawable(fieldDrawable(field.getOrNull(8) ?: 0))
+    private fun toggleFields(enabled: Boolean) {
+        layout_game_details_field_0.isEnabled = enabled
+        layout_game_details_field_1.isEnabled = enabled
+        layout_game_details_field_2.isEnabled = enabled
+        layout_game_details_field_3.isEnabled = enabled
+        layout_game_details_field_4.isEnabled = enabled
+        layout_game_details_field_5.isEnabled = enabled
+        layout_game_details_field_6.isEnabled = enabled
+        layout_game_details_field_7.isEnabled = enabled
+        layout_game_details_field_8.isEnabled = enabled
     }
+
+    private fun updateFields(fields: List<Int>) {
+        setField(layout_game_details_field_0, fields, 0)
+        setField(layout_game_details_field_1, fields, 1)
+        setField(layout_game_details_field_2, fields, 2)
+        setField(layout_game_details_field_3, fields, 3)
+        setField(layout_game_details_field_4, fields, 4)
+        setField(layout_game_details_field_5, fields, 5)
+        setField(layout_game_details_field_6, fields, 6)
+        setField(layout_game_details_field_7, fields, 7)
+        setField(layout_game_details_field_8, fields, 8)
+    }
+
+    private fun setField(field: ImageView, fields: List<Int>, index: Int) =
+            field.setImageDrawable(fieldDrawable(fields.getOrNull(index) ?: 0))
 
     private fun fieldDrawable(playerIndex: Int): Drawable? =
             when (playerIndex) {

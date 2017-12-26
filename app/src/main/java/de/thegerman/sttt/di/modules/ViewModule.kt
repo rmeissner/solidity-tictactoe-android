@@ -10,6 +10,7 @@ import dagger.Module
 import dagger.Provides
 import de.thegerman.sttt.ui.account.setup.AccountSetupContract
 import de.thegerman.sttt.ui.account.unlock.UnlockContract
+import de.thegerman.sttt.ui.games.add.create.CreateGameContract
 import de.thegerman.sttt.ui.games.details.DetailsContract
 import de.thegerman.sttt.ui.games.overview.OverviewContract
 import pm.gnosis.heimdall.common.di.ForView
@@ -29,6 +30,11 @@ class ViewModule(private val context: Context) {
     @Provides
     @ForView
     fun providesAccountSetupContract(provider: ViewModelProvider) = provider[AccountSetupContract::class.java]
+
+
+    @Provides
+    @ForView
+    fun providesCreateGameContract(provider: ViewModelProvider) = provider[CreateGameContract::class.java]
 
     @Provides
     @ForView

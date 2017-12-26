@@ -1,46 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/layout_game_overview_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent" />
 
-        <EditText
-            android:id="@+id/layout_game_overview_game_id_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
-            android:hint="@string/enter_game_id" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/layout_game_overview_create_game_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:scaleType="center"
+        android:tint="@color/white"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 
-        <TextView
-            android:id="@+id/layout_game_overview_open_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/layout_game_overview_game_id_input"
-            android:layout_gravity="end"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:padding="16dp"
-            android:text="@string/open_game"
-            android:textColor="@color/colorAccent" />
-
-        <TextView
-            android:id="@+id/layout_game_overview_setup_account_button"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
-            android:background="@color/colorAccent"
-            android:gravity="center"
-            android:padding="16dp"
-            android:text="@string/setup_account"
-            android:textColor="@android:color/white" />
-    </RelativeLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/layout_game_overview_setup_account_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:scaleType="center"
+        android:tint="@color/white"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_person_add_black_24dp" />
 </android.support.design.widget.CoordinatorLayout>

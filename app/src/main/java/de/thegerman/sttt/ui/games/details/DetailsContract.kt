@@ -9,4 +9,6 @@ import java.math.BigInteger
 abstract class DetailsContract: ViewModel() {
     abstract fun setGameId(id: BigInteger)
     abstract fun gameDetailsTransformer(): ObservableTransformer<Unit, Result<GameInfo>>
+    abstract fun joinTransformer(): ObservableTransformer<Unit, Result<String>>
+    abstract fun makeMoveTransformer(): ObservableTransformer<Int, Result<String>>
 }

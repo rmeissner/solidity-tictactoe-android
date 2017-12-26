@@ -28,4 +28,13 @@
     <string name="you_are_player_x">You are Player %s</string>
     <string name="setup_account_game">Setup account to join game</string>
     <string name="game_not_started">Game has not yet started!</string>
+    <string name="move_published">Move was published. Please wait for update or refresh manually!</string>
+    <string name="tab_title_create">Create Game</string>
+    <string name="tab_title_open">Open Game</string>
+    <string name="create_game">Create Game</string>
+    <string name="creation_description_1">Creating a game will require 1 ETH in addition to the normal transaction fees.</string>
+    <string name="creation_description_2">Once a game has been created another player can join. For this it is again necessary to pay 1 ETH</string>
+    <string name="creation_description_3">The winner will receive 2 ETH or in case of a Tie each player gets their 1 ETH refunded.</string>
+    <string name="joined_at">Joined at %s</string>
+    <string name="published_at">Published at %s</string>
 </resources>

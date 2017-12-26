@@ -12,6 +12,8 @@ import de.thegerman.sttt.ui.account.setup.AccountSetupContract
 import de.thegerman.sttt.ui.account.setup.AccountSetupViewModel
 import de.thegerman.sttt.ui.account.unlock.UnlockContract
 import de.thegerman.sttt.ui.account.unlock.UnlockViewModel
+import de.thegerman.sttt.ui.games.add.create.CreateGameContract
+import de.thegerman.sttt.ui.games.add.create.CreateGameViewModel
 import de.thegerman.sttt.ui.games.details.DetailsContract
 import de.thegerman.sttt.ui.games.details.DetailsViewModel
 import de.thegerman.sttt.ui.games.overview.OverviewContract
@@ -24,6 +26,11 @@ abstract class ViewModelFactoryModule {
     @IntoMap
     @ViewModelKey(AccountSetupContract::class)
     abstract fun bindsAccountSetupContract(viewModel: AccountSetupViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateGameContract::class)
+    abstract fun bindsCreateGameContract(viewModel: CreateGameViewModel): ViewModel
 
     @Binds
     @IntoMap
