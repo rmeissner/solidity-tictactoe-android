@@ -15,10 +15,13 @@ import de.thegerman.sttt.ui.account.setup.AccountSetupActivity
 import de.thegerman.sttt.ui.base.InjectedActivity
 import de.thegerman.sttt.ui.games.add.AddGameActivity
 import de.thegerman.sttt.ui.games.details.DetailsActivity
+import de.thegerman.sttt.utils.displayString
 import de.thegerman.sttt.utils.subscribeForResult
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.layout_game_overview.*
+import pm.gnosis.heimdall.common.utils.copyToClipboard
+import pm.gnosis.heimdall.common.utils.snackbar
 import pm.gnosis.utils.nullOnThrow
 import timber.log.Timber
 import java.math.BigInteger
@@ -44,10 +47,31 @@ class OverviewActivity : InjectedActivity() {
         setContentView(R.layout.layout_game_overview)
         layout_game_overview_list.adapter = adapter
         layout_game_overview_list.layoutManager = LinearLayoutManager(this)
+        layout_game_overview_balance.setOnClickListener {
+        }
     }
 
     override fun onStart() {
         super.onStart()
+        disposables += viewModel.observeAccountBalance()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    layout_game_overview_balance.text = it.displayString(this)
+                }, {
+                    layout_game_overview_balance.text = "-"
+                    Timber.e(it)
+                })
+        disposables += layout_game_overview_balance.clicks()
+                .compose(viewModel.shareAccountTransformer())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeForResult({
+                    copyToClipboard(getString(R.string.clipboard_address_label), it, {
+                        snackbar(layout_game_overview_balance, getString(R.string.copied_address_to_clipboard))
+                    })
+                }, {
+                    snackbar(layout_game_overview_balance, getString(R.string.copy_address_to_clipboard_error))
+                    Timber.e(it)
+                })
         disposables += viewModel.observeGames()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeForResult(adapter::updateData, Timber::e)

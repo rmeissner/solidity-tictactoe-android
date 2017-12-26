@@ -71,8 +71,6 @@
             android:gravity="center"
             android:padding="16dp"
             android:text="@string/finish"
-            android:textColor="@android:color/white"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:textColor="@android:color/white" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -39,4 +39,10 @@
     <string name="joined_at">Joined at %s</string>
     <string name="published_at">Published at %s</string>
     <string name="x_pending_actions">%s pending actions</string>
+    <string name="copied_address_to_clipboard">Copied account address to clipboard!</string>
+    <string name="clipboard_address_label">Solidity TicTacToe Account</string>
+    <string name="copy_address_to_clipboard_error">Could not copy address to clipboard</string>
+    <string name="x_ether">%s Ξ</string>
+    <string name="x_wei">%s Wei</string>
+    <string name="x_gwei">%s GWei</string>
 </resources>

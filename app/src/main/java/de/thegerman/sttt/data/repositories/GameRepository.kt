@@ -20,4 +20,5 @@ interface GameRepository {
     fun observeDeployStatus(transactionHash: String): Observable<String>
     fun observeInteractionStatus(transactionHash: String): Observable<Boolean>
     fun observePendingActions(gameId: BigInteger): Flowable<List<PendingAction>>
+    fun observeGameAccountBalance(): Observable<Wei>
 }

@@ -174,7 +174,7 @@ class EthereumGameRepository @Inject constructor(
                 SubRequest(JsonRpcRequest(id = 2, method = "eth_getTransactionCount", params = arrayListOf(transactionCallParams.from!!.asEthereumAddressString(), DEFAULT_BLOCK_LATEST)), { it.checkedResult().hexAsBigInteger() })
         )
         return rpcApi.bulk(request).map {
-            val adjustedGas = BigDecimal.valueOf(1.4)
+            val adjustedGas = BigDecimal.valueOf(2)
                     .multiply(BigDecimal(it.estimatedGas.value)).setScale(0, BigDecimal.ROUND_UP).unscaledValue()
             TransactionParameters(adjustedGas, it.gasPrice.value!!, it.transactionCount.value!!)
         }
@@ -234,6 +234,18 @@ class EthereumGameRepository @Inject constructor(
                                             }
                                 }
                         ).startWith(Flowable.just(it))
+                    }
+
+    override fun observeGameAccountBalance(): Observable<Wei> =
+            accountsRepository.loadActiveAccount()
+                    .flatMapObservable {
+                        rpcApi.post(
+                                JsonRpcRequest(
+                                        method = FUNCTION_GET_BALANCE,
+                                        params = arrayListOf(it.address.asEthereumAddressString(), DEFAULT_BLOCK_LATEST)))
+                                .map { Wei(it.checkedResult().hexAsBigInteger()) }
+                                .repeatWhen {  it.delay(10, TimeUnit.SECONDS) }
+                                .retryWhen { it.delay(20, TimeUnit.SECONDS) }
                     }
 
     private class TransactionParametersRequest(val estimatedGas: SubRequest<BigInteger>, val gasPrice: SubRequest<BigInteger>, val transactionCount: SubRequest<BigInteger>) :

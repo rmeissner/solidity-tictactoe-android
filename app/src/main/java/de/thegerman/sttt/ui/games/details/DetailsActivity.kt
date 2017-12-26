@@ -161,7 +161,7 @@ class DetailsActivity : InjectedActivity() {
             }
         }
         details.playerIndex?.let {
-            val pendingMoves = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
+            val pendingMoves = arrayListOf(-1, -1, -1, -1, -1, -1, -1, -1, -1)
             data.pendingActions.forEach {
                 when (it) {
                     is MakeMovePendingAction -> {
@@ -209,6 +209,7 @@ class DetailsActivity : InjectedActivity() {
 
     private fun fieldDrawable(playerIndex: Int): Drawable? =
             when (playerIndex) {
+                -1 -> ContextCompat.getDrawable(this, android.R.color.transparent)
                 1 -> ContextCompat.getDrawable(this, R.drawable.ic_player_1)
                 2 -> ContextCompat.getDrawable(this, R.drawable.ic_player_2)
                 else -> null
