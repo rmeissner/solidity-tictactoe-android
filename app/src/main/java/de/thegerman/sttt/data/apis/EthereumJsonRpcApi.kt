@@ -17,6 +17,9 @@ interface EthereumJsonRpcApi {
     fun receipt(@Body jsonRpcRequest: JsonRpcRequest): Observable<JsonRpcTransactionReceiptResult>
 
     @POST("/")
+    fun receipt(@Body jsonRpcRequest: Collection<JsonRpcRequest>): Observable<Collection<JsonRpcTransactionReceiptResult>>
+
+    @POST("/")
     fun post(@Body jsonRpcRequest: JsonRpcRequest): Observable<JsonRpcResult>
 
     @POST("/")

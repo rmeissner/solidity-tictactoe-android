@@ -2,8 +2,10 @@ package de.thegerman.sttt.ui.games.details
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
 import android.text.format.DateUtils
 import android.view.View
@@ -11,7 +13,8 @@ import android.widget.ImageView
 import com.jakewharton.rxbinding2.support.v4.widget.refreshes
 import com.jakewharton.rxbinding2.view.clicks
 import de.thegerman.sttt.R
-import de.thegerman.sttt.data.models.GameInfo
+import de.thegerman.sttt.data.models.JoinPendingAction
+import de.thegerman.sttt.data.models.MakeMovePendingAction
 import de.thegerman.sttt.di.components.AppComponent
 import de.thegerman.sttt.di.components.DaggerViewComponent
 import de.thegerman.sttt.di.modules.ViewModule
@@ -52,14 +55,9 @@ class DetailsActivity : InjectedActivity() {
             finish()
             return
         }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = getString(R.string.game_x, gameIndex?.asDecimalString())
+        registerToolbar(layout_game_details_toolbar)
+        layout_game_details_toolbar.title = getString(R.string.game_x, gameIndex?.asDecimalString())
         viewModel.setGameId(gameIndex!!)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
     }
 
     override fun onStart() {
@@ -95,7 +93,7 @@ class DetailsActivity : InjectedActivity() {
                 layout_game_details_field_6.clicks().map { 6 },
                 layout_game_details_field_7.clicks().map { 7 },
                 layout_game_details_field_8.clicks().map { 8 }
-                )
+        )
     }
 
     private fun makeMove(vararg inputs: Observable<Int>) =
@@ -121,8 +119,10 @@ class DetailsActivity : InjectedActivity() {
         snackbar(layout_game_details_state, getString(R.string.error_game_info_will_retry))
     }
 
-    private fun onGameDetails(details: GameInfo) {
+    private fun onGameDetails(data: DetailsContract.GameData) {
+        val details = data.info
         hasGameInfo = true
+        layout_game_details_pending_actions.text = getString(R.string.x_pending_actions, data.pendingActions.size.toString())
         layout_game_details_player_info.text = when (details.playerIndex) {
             null -> {
                 null
@@ -142,22 +142,34 @@ class DetailsActivity : InjectedActivity() {
                 else -> getString(R.string.game_over_tie)
             }
         }
+        val isJoining = data.pendingActions.any { it is JoinPendingAction }
         layout_game_details_last_move.text = when (details.state) {
             0 -> {
                 details.playerIndex?.let {
                     layout_game_details_setup_button.visibility = View.GONE
-                    layout_game_details_join_button.visibility = if (it == 1) View.GONE else View.VISIBLE
+                    layout_game_details_join_button.visibility = if (it == 1 || isJoining) View.GONE else View.VISIBLE
                 } ?: run {
                     layout_game_details_setup_button.visibility = View.VISIBLE
                     layout_game_details_join_button.visibility = View.GONE
                 }
-                getString(R.string.game_not_started)
+                getString(if (isJoining) R.string.joining_game else R.string.game_not_started)
             }
             else -> {
                 layout_game_details_setup_button.visibility = View.GONE
                 layout_game_details_join_button.visibility = View.GONE
                 getString(R.string.last_move_at, DateUtils.formatDateTime(this, details.lastMoveAt, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME))
             }
+        }
+        details.playerIndex?.let {
+            val pendingMoves = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
+            data.pendingActions.forEach {
+                when (it) {
+                    is MakeMovePendingAction -> {
+                        pendingMoves[it.fieldNo] = details.playerIndex
+                    }
+                }
+            }
+            updateFields(pendingMoves, ContextCompat.getColor(this, R.color.pending_move))
         }
         updateFields(details.fields)
         toggleFields(details.playerIndex == details.currentPlayer)
@@ -175,25 +187,30 @@ class DetailsActivity : InjectedActivity() {
         layout_game_details_field_8.isEnabled = enabled
     }
 
-    private fun updateFields(fields: List<Int>) {
-        setField(layout_game_details_field_0, fields, 0)
-        setField(layout_game_details_field_1, fields, 1)
-        setField(layout_game_details_field_2, fields, 2)
-        setField(layout_game_details_field_3, fields, 3)
-        setField(layout_game_details_field_4, fields, 4)
-        setField(layout_game_details_field_5, fields, 5)
-        setField(layout_game_details_field_6, fields, 6)
-        setField(layout_game_details_field_7, fields, 7)
-        setField(layout_game_details_field_8, fields, 8)
+    private fun updateFields(fields: List<Int>, @ColorInt tint: Int = ContextCompat.getColor(this, R.color.move)) {
+        setField(layout_game_details_field_0, fields, 0, tint)
+        setField(layout_game_details_field_1, fields, 1, tint)
+        setField(layout_game_details_field_2, fields, 2, tint)
+        setField(layout_game_details_field_3, fields, 3, tint)
+        setField(layout_game_details_field_4, fields, 4, tint)
+        setField(layout_game_details_field_5, fields, 5, tint)
+        setField(layout_game_details_field_6, fields, 6, tint)
+        setField(layout_game_details_field_7, fields, 7, tint)
+        setField(layout_game_details_field_8, fields, 8, tint)
     }
 
-    private fun setField(field: ImageView, fields: List<Int>, index: Int) =
-            field.setImageDrawable(fieldDrawable(fields.getOrNull(index) ?: 0))
+    private fun setField(field: ImageView, fields: List<Int>, index: Int, @ColorInt tint: Int) =
+            field.apply {
+                fieldDrawable(fields.getOrNull(index) ?: 0)?.let {
+                    setImageDrawable(it)
+                    setColorFilter(tint, PorterDuff.Mode.SRC_IN)
+                }
+            }
 
     private fun fieldDrawable(playerIndex: Int): Drawable? =
             when (playerIndex) {
-                1 -> ContextCompat.getDrawable(this, R.drawable.ic_player_o)
-                2 -> ContextCompat.getDrawable(this, R.drawable.ic_player_x)
+                1 -> ContextCompat.getDrawable(this, R.drawable.ic_player_1)
+                2 -> ContextCompat.getDrawable(this, R.drawable.ic_player_2)
                 else -> null
             }
 

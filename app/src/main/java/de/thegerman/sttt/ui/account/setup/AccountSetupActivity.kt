@@ -32,6 +32,7 @@ class AccountSetupActivity : InjectedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_account_setup)
+        registerToolbar(layout_account_setup_toolbar)
     }
 
     override fun onResume() {
@@ -56,7 +57,7 @@ class AccountSetupActivity : InjectedActivity() {
 
     private fun errorMessage(it: Throwable): String? =
             (it as? Bip39ValidationResult)?.let {
-                when(it) {
+                when (it) {
                     is MnemonicNotInWordlist -> getString(R.string.error_mnemonic_wrong_word)
                     is EmptyMnemonic -> getString(R.string.error_mnemonic_empty)
                     is InvalidEntropy, is UnknownMnemonicError, is InvalidChecksum -> getString(R.string.error_mnemonic_unknown)

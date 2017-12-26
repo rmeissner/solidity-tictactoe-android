@@ -38,9 +38,9 @@ class CreateGameFragment : InjectedFragment() {
     override fun onStart() {
         super.onStart()
         disposables += layout_create_game_create_button.clicks()
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { layout_create_game_create_button.isEnabled = false }
                 .compose(viewModel.createTransformer())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { layout_create_game_create_button.isEnabled = true }
                 .subscribeForResult({
                     startActivity(OverviewActivity.createIntent(context!!).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP))

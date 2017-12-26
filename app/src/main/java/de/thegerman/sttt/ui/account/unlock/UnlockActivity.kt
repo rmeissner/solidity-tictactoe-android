@@ -33,7 +33,6 @@ class UnlockActivity : InjectedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         skipSecurityCheck()
         super.onCreate(savedInstanceState)
-        supportActionBar?.title = getString(R.string.unlock_screen_title)
         setContentView(R.layout.layout_unlock)
         if (intent?.getBooleanExtra(EXTRA_CLOSE_APP, false) == true) {
             finish()

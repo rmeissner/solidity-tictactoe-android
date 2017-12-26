@@ -29,6 +29,7 @@ class AddGameActivity : InjectedActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_add_game)
 
+        registerToolbar(layout_add_game_toolbar)
         layout_add_game_view_pager.adapter = pagerAdapter()
         layout_add_game_pager_indicator.setupWithViewPager(layout_add_game_view_pager)
     }

@@ -1,5 +1,6 @@
 package de.thegerman.sttt.data.repositories
 
+import de.thegerman.sttt.data.models.PendingAction
 import de.thegerman.sttt.data.models.Game
 import de.thegerman.sttt.data.models.GameInfo
 import io.reactivex.Flowable
@@ -17,4 +18,6 @@ interface GameRepository {
     fun makeMove(gameId: BigInteger, fieldNo: Int): Observable<String>
     fun observeGames(): Flowable<List<Game>>
     fun observeDeployStatus(transactionHash: String): Observable<String>
+    fun observeInteractionStatus(transactionHash: String): Observable<Boolean>
+    fun observePendingActions(gameId: BigInteger): Flowable<List<PendingAction>>
 }

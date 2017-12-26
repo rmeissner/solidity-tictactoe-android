@@ -12,15 +12,14 @@ import de.thegerman.sttt.data.apis.models.*
 import de.thegerman.sttt.data.db.GameDao
 import de.thegerman.sttt.data.db.models.GameDb
 import de.thegerman.sttt.data.db.models.PendingGameDb
-import de.thegerman.sttt.data.models.Game
-import de.thegerman.sttt.data.models.GameInfo
-import de.thegerman.sttt.data.models.detach
+import de.thegerman.sttt.data.db.models.PendingInteactionDb
+import de.thegerman.sttt.data.models.*
 import de.thegerman.sttt.data.repositories.GameRepository
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.ObservableTransformer
-import io.reactivex.SingleTransformer
 import io.reactivex.functions.BiFunction
+import io.reactivex.schedulers.Schedulers
 import pm.gnosis.heimdall.accounts.base.models.Account
 import pm.gnosis.heimdall.accounts.base.repositories.AccountsRepository
 import pm.gnosis.heimdall.data.remote.models.TransactionParameters
@@ -53,7 +52,11 @@ class EthereumGameRepository @Inject constructor(
             accountsRepository.loadActiveAccount()
                     .map { it.toOptional() }
                     .onErrorReturnItem(None)
-                    .flatMapObservable { account ->
+                    .flatMap { account ->
+                        gameDao.loadJoinedGame(gameId).map { it.toOptional() }.onErrorReturnItem(None)
+                                .map { account to it }
+                    }
+                    .flatMapObservable { (account, cachedGame) ->
                         val from = account.toNullable()?.address?.asEthereumAddressStringOrNull()
                         rpcApi.bulk(GameInfoRequest(
                                 SubRequest(TransactionCallParams(to = BuildConfig.GAME_ADDRESS, data = TicTacToe.GetGameInfo.encode(Solidity.UInt256(gameId))).callRequest(1),
@@ -74,7 +77,14 @@ class EthereumGameRepository @Inject constructor(
                                     (8 downTo 0).mapTo(field) {
                                         fieldData.substring(it * 2, it * 2 + 2).toIntOrNull(2) ?: 0
                                     }
-                                    GameInfo(field, currentPlayer, lastMove, state, it.playerIndex?.value)
+                                    val localGame = cachedGame.toNullable()
+                                    val remotePlayerIndex = it.playerIndex?.value
+                                    var playerIndex = localGame?.playerIndex ?: remotePlayerIndex
+                                    if (remotePlayerIndex != null && remotePlayerIndex > 0 && remotePlayerIndex != localGame?.playerIndex) {
+                                        playerIndex = remotePlayerIndex
+                                        gameDao.insert(GameDb(gameId, localGame?.joinedAt ?: System.currentTimeMillis(), remotePlayerIndex))
+                                    }
+                                    GameInfo(field, currentPlayer, lastMove, state, playerIndex)
                                 }
                     }
 
@@ -108,10 +118,16 @@ class EthereumGameRepository @Inject constructor(
             estimate { buildJoinParams(gameId, it) }
 
     override fun joinGame(gameId: BigInteger): Observable<String> =
-            publish { buildJoinParams(gameId, it) }
-                    .map {
-                        gameDao.insert(GameDb(gameId, System.currentTimeMillis()))
-                        it
+            gameDao.pendingInteactionsCount(gameId)
+                    .subscribeOn(Schedulers.io())
+                    .flatMapObservable {
+                        if (it > 0) Observable.error<String>(IllegalStateException())
+                        else publish { buildJoinParams(gameId, it) }
+                                .map {
+                                    gameDao.insert(PendingInteactionDb.join(it.hexAsBigInteger(), gameId))
+                                    gameDao.insert(GameDb(gameId, System.currentTimeMillis(), 0))
+                                    it
+                                }
                     }
 
     private fun buildCreateParams(account: Account): TransactionCallParams {
@@ -140,7 +156,16 @@ class EthereumGameRepository @Inject constructor(
             estimate { buildMakeMoveParams(gameId, fieldNo, it) }
 
     override fun makeMove(gameId: BigInteger, fieldNo: Int): Observable<String> =
-            publish { buildMakeMoveParams(gameId, fieldNo, it) }
+            gameDao.pendingInteactionsCount(gameId)
+                    .subscribeOn(Schedulers.io())
+                    .flatMapObservable {
+                        if (it > 0) Observable.error<String>(IllegalStateException())
+                        else publish { buildMakeMoveParams(gameId, fieldNo, it) }
+                                .map {
+                                    gameDao.insert(PendingInteactionDb.makeMove(it.hexAsBigInteger(), gameId, fieldNo))
+                                    it
+                                }
+                    }
 
     private fun getTransactionParameters(transactionCallParams: TransactionCallParams): Observable<TransactionParameters> {
         val request = TransactionParametersRequest(
@@ -149,7 +174,7 @@ class EthereumGameRepository @Inject constructor(
                 SubRequest(JsonRpcRequest(id = 2, method = "eth_getTransactionCount", params = arrayListOf(transactionCallParams.from!!.asEthereumAddressString(), DEFAULT_BLOCK_LATEST)), { it.checkedResult().hexAsBigInteger() })
         )
         return rpcApi.bulk(request).map {
-            val adjustedGas = BigDecimal.valueOf(1.1)
+            val adjustedGas = BigDecimal.valueOf(1.4)
                     .multiply(BigDecimal(it.estimatedGas.value)).setScale(0, BigDecimal.ROUND_UP).unscaledValue()
             TransactionParameters(adjustedGas, it.gasPrice.value!!, it.transactionCount.value!!)
         }
@@ -157,20 +182,58 @@ class EthereumGameRepository @Inject constructor(
 
     override fun observeDeployStatus(transactionHash: String): Observable<String> =
             rpcApi.receipt(JsonRpcRequest(method = "eth_getTransactionReceipt", params = arrayListOf(transactionHash)))
-                    .map { it.checkedResult() }
                     .flatMap {
-                        it.logs.forEach {
+                        it.checkedResult()?.logs?.forEach {
                             nullOnThrow { TicTacToe.Events.GameCreation.decode(it.topics, it.data) }?.let {
                                 return@flatMap Observable.just(it.gameindex.value)
                             }
                         }
                         Observable.error<BigInteger>(IllegalStateException())
                     }
-                    .repeatWhen { it.delay(20, TimeUnit.SECONDS) }
+                    .retryWhen { it.delay(20, TimeUnit.SECONDS) }
                     .map {
                         gameDao.removePendingGame(transactionHash.hexAsBigInteger())
-                        gameDao.insert(GameDb(it, System.currentTimeMillis()))
+                        gameDao.insert(GameDb(it, System.currentTimeMillis(), 1))
                         it.asEthereumAddressString()
+                    }
+
+    override fun observeInteractionStatus(transactionHash: String): Observable<Boolean> =
+            rpcApi.receipt(JsonRpcRequest(method = "eth_getTransactionReceipt", params = arrayListOf(transactionHash)))
+                    .flatMap {
+                        it.checkedResult()?.let {
+                            it.status?.let { return@flatMap Observable.just(it) }
+                        }
+                        Observable.error<BigInteger>(IllegalStateException())
+                    }
+                    .retryWhen { it.delay(10, TimeUnit.SECONDS) }
+                    .map {
+                        gameDao.removePendingInteaction(transactionHash.hexAsBigInteger())
+                        it == BigInteger.ONE
+                    }
+
+    override fun observePendingActions(gameId: BigInteger): Flowable<List<PendingAction>> =
+            gameDao.observePendingInteactions(gameId)
+                    .map {
+                        it.mapNotNull { entry ->
+                            when {
+                                entry.action.startsWith(PendingInteactionDb.ACTION_JOIN) ->
+                                    JoinPendingAction(entry.transactionHash)
+                                entry.action.startsWith(PendingInteactionDb.ACTION_MAKE_MOVE) ->
+                                    entry.action.substring(1).toIntOrNull()?.let { MakeMovePendingAction(entry.transactionHash, it) }
+                                else -> null
+                            }
+                        }
+                    }
+                    .switchMap {
+                        Flowable.merge(
+                                it.map {
+                                    observeInteractionStatus(it.hash.asTransactionHash())
+                                            .toFlowable(BackpressureStrategy.DROP)
+                                            .flatMap {
+                                                Flowable.empty<List<PendingAction>>()
+                                            }
+                                }
+                        ).startWith(Flowable.just(it))
                     }
 
     private class TransactionParametersRequest(val estimatedGas: SubRequest<BigInteger>, val gasPrice: SubRequest<BigInteger>, val transactionCount: SubRequest<BigInteger>) :
@@ -178,7 +241,7 @@ class EthereumGameRepository @Inject constructor(
 
     private class GameInfoRequest(val state: SubRequest<String>, val playerIndex: SubRequest<Int>?) : BulkRequest(state, playerIndex)
 
-    private fun JsonRpcTransactionReceiptResult.checkedResult(): TransactionReceipt {
+    private fun JsonRpcTransactionReceiptResult.checkedResult(): TransactionReceipt? {
         error?.let {
             throw ErrorResultException(it.message)
         }

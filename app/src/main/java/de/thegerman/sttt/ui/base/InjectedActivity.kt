@@ -2,6 +2,8 @@ package de.thegerman.sttt.ui.base
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
+import de.thegerman.sttt.R
 import de.thegerman.sttt.StttApplication
 import de.thegerman.sttt.di.components.AppComponent
 import de.thegerman.sttt.ui.account.unlock.UnlockActivity
@@ -43,6 +45,11 @@ abstract class InjectedActivity : AppCompatActivity() {
         if (!unlocked) {
             startActivity(UnlockActivity.createIntent(this))
         }
+    }
+
+    protected fun registerToolbar(toolbar: Toolbar) {
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp)
+        toolbar.setNavigationOnClickListener { onBackPressed() }
     }
 
     private fun handleCheckError(throwable: Throwable) {

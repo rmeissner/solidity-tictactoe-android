@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b48003843cdf99526cb1933711ae5bf5",
+    "identityHash": "414b783f01f3fadc706927a2c2bf0368",
     "entities": [
       {
         "tableName": "ttt_games",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `joined_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `joinedAt` INTEGER NOT NULL, `playerIndex` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -16,9 +16,15 @@
           },
           {
             "fieldPath": "joinedAt",
-            "columnName": "joined_at",
+            "columnName": "joinedAt",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "playerIndex",
+            "columnName": "playerIndex",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -55,11 +61,49 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "ttt_pending_interaction",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transactionHash` TEXT NOT NULL, `gameId` TEXT NOT NULL, `publishedAt` INTEGER NOT NULL, `action` TEXT NOT NULL, PRIMARY KEY(`transactionHash`))",
+        "fields": [
+          {
+            "fieldPath": "transactionHash",
+            "columnName": "transactionHash",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gameId",
+            "columnName": "gameId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "publishedAt",
+            "columnName": "publishedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "action",
+            "columnName": "action",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "transactionHash"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b48003843cdf99526cb1933711ae5bf5\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"414b783f01f3fadc706927a2c2bf0368\")"
     ]
   }
 }

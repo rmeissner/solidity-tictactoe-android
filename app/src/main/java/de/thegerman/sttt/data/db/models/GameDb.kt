@@ -12,11 +12,15 @@ data class GameDb(
         var id: BigInteger,
 
         @ColumnInfo(name = COL_JOINED_AT)
-        var joinedAt: Long
+        var joinedAt: Long,
+
+        @ColumnInfo(name = COL_PLAYER_INDEX)
+        var playerIndex: Int?
 ) {
     companion object {
         const val TABLE_NAME = "ttt_games"
         const val COL_ID = "id"
-        const val COL_JOINED_AT = "joined_at"
+        const val COL_JOINED_AT = "joinedAt"
+        const val COL_PLAYER_INDEX = "playerIndex"
     }
 }
