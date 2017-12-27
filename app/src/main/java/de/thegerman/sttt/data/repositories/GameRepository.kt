@@ -21,4 +21,8 @@ interface GameRepository {
     fun observeInteractionStatus(transactionHash: String): Observable<Boolean>
     fun observePendingActions(gameId: BigInteger): Flowable<List<PendingAction>>
     fun observeGameAccountBalance(): Observable<Wei>
+    fun estimateCancelGame(gameId: BigInteger): Observable<Wei>
+    fun cancelGame(gameId: BigInteger): Observable<String>
+    fun estimateKickPlayer(gameId: BigInteger): Observable<Wei>
+    fun kickPlayer(gameId: BigInteger): Observable<String>
 }

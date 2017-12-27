@@ -15,7 +15,9 @@ class TransactionConfirmViewModel @Inject constructor(
         it.switchMap { (gameId, action) ->
             when (action) {
                 is Action.Join -> gameRepository.estimateJoinGame(gameId)
-                is TransactionConfirmationContract.Action.MakeMove -> gameRepository.estimateMakeMoveGame(gameId, action.field)
+                is Action.MakeMove -> gameRepository.estimateMakeMoveGame(gameId, action.field)
+                is Action.Cancel -> gameRepository.estimateCancelGame(gameId)
+                is Action.Kick -> gameRepository.estimateKickPlayer(gameId)
             }
                     .mapToResult()
         }
@@ -25,7 +27,9 @@ class TransactionConfirmViewModel @Inject constructor(
         it.switchMap { (gameId, action) ->
             when (action) {
                 is Action.Join -> gameRepository.joinGame(gameId)
-                is TransactionConfirmationContract.Action.MakeMove -> gameRepository.makeMove(gameId, action.field)
+                is Action.MakeMove -> gameRepository.makeMove(gameId, action.field)
+                is Action.Cancel ->  gameRepository.cancelGame(gameId)
+                is Action.Kick ->  gameRepository.kickPlayer(gameId)
             }
                     .mapToResult()
         }

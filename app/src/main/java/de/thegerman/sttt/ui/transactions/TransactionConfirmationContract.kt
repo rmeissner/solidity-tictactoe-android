@@ -13,6 +13,8 @@ abstract class TransactionConfirmationContract : ViewModel() {
 
     sealed class Action {
         class Join : Action()
+        class Cancel : Action()
+        class Kick : Action()
         data class MakeMove(val field: Int) : Action()
     }
 }

@@ -74,7 +74,10 @@ class OverviewActivity : InjectedActivity() {
                 })
         disposables += viewModel.observeGames()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeForResult(adapter::updateData, Timber::e)
+                .subscribeForResult({
+                    adapter.updateData(it)
+                    layout_game_overview_tutorial.visibility = if (it.entries.isEmpty()) View.VISIBLE else View.GONE
+                }, Timber::e)
         disposables += layout_game_overview_create_game_button.clicks()
                 .subscribe({
                     startActivity(AddGameActivity.createIntent(this))

@@ -21,6 +21,7 @@ android {
         buildConfigField javaTypes.STRING, "BLOCKCHAIN_NET_URL", asString(getKey("BLOCKCHAIN_NET_URL", "https://kovan.infura.io/"))
         buildConfigField javaTypes.STRING, "INFURA_API_KEY", asString(getKey("INFURA_API_KEY", ""))
         buildConfigField javaTypes.STRING, "ETHERSCAN_TX_URL", asString(getKey("ETHERSCAN_TX_URL", "https://kovan.etherscan.io/tx/"))
+        buildConfigField javaTypes.LONG, "GAS_PRICE_OVERRIDE", getKey("GAS_PRICE_OVERRIDE", "4_000_000_000L")
 
         javaCompileOptions {
             annotationProcessorOptions {

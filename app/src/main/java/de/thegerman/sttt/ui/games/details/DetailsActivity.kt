@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
@@ -12,8 +13,11 @@ import android.view.View
 import android.widget.ImageView
 import com.jakewharton.rxbinding2.support.v4.widget.refreshes
 import com.jakewharton.rxbinding2.view.clicks
+import de.thegerman.sttt.BuildConfig
 import de.thegerman.sttt.R
+import de.thegerman.sttt.data.models.CancelPendingAction
 import de.thegerman.sttt.data.models.JoinPendingAction
+import de.thegerman.sttt.data.models.KickPendingAction
 import de.thegerman.sttt.data.models.MakeMovePendingAction
 import de.thegerman.sttt.di.components.AppComponent
 import de.thegerman.sttt.di.components.DaggerViewComponent
@@ -28,6 +32,7 @@ import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.layout_game_details.*
 import pm.gnosis.heimdall.common.utils.snackbar
 import pm.gnosis.utils.asDecimalString
+import pm.gnosis.utils.asTransactionHash
 import pm.gnosis.utils.hexAsBigIntegerOrNull
 import timber.log.Timber
 import java.math.BigInteger
@@ -79,6 +84,14 @@ class DetailsActivity : InjectedActivity() {
                 .subscribe({
                     TransactionConfirmationDialog.confirmJoin(gameIndex!!).show(supportFragmentManager, null)
                 }, Timber::e)
+        disposables += layout_game_details_cancel_button.clicks()
+                .subscribe({
+                    TransactionConfirmationDialog.confirmCancel(gameIndex!!).show(supportFragmentManager, null)
+                }, Timber::e)
+        disposables += layout_game_details_kick_button.clicks()
+                .subscribe({
+                    TransactionConfirmationDialog.confirmKick(gameIndex!!).show(supportFragmentManager, null)
+                }, Timber::e)
         disposables += makeMove(
                 layout_game_details_field_0.clicks().map { 0 },
                 layout_game_details_field_1.clicks().map { 1 },
@@ -125,28 +138,59 @@ class DetailsActivity : InjectedActivity() {
         layout_game_details_state.text = when (details.state) {
             0 -> getString(R.string.waiting_for_player)
             1 -> getString(R.string.player_x_turn, details.currentPlayer.toString())
+            3 -> getString(R.string.game_canceled)
             else -> when (details.currentPlayer) {
                 1, 2 -> getString(R.string.player_x_won, details.currentPlayer.toString())
                 else -> getString(R.string.game_over_tie)
             }
         }
         val isJoining = data.pendingActions.any { it is JoinPendingAction }
+        val isCanceling = data.pendingActions.any { it is CancelPendingAction }
+        val isKicking = data.pendingActions.any { it is KickPendingAction }
+
+        layout_game_details_setup_button.visibility = View.GONE
+        layout_game_details_join_button.visibility = View.GONE
+        layout_game_details_cancel_button.visibility = View.GONE
+        layout_game_details_kick_button.visibility = View.GONE
+        layout_game_details_kick_warning.visibility = View.GONE
+
         layout_game_details_last_move.text = when (details.state) {
             0 -> {
                 details.playerIndex?.let {
-                    layout_game_details_setup_button.visibility = View.GONE
                     layout_game_details_join_button.visibility = if (it == 1 || isJoining) View.GONE else View.VISIBLE
+                    layout_game_details_cancel_button.visibility = if (it == 1 && data.pendingActions.isEmpty()) View.VISIBLE else View.GONE
                 } ?: run {
                     layout_game_details_setup_button.visibility = View.VISIBLE
-                    layout_game_details_join_button.visibility = View.GONE
                 }
-                getString(if (isJoining) R.string.joining_game else R.string.game_not_started)
+                getString(when {
+                    isJoining -> R.string.joining_game
+                    isCanceling -> R.string.canceling_game
+                    isKicking -> R.string.kicking_player
+                    else -> R.string.game_not_started
+                })
+            }
+            3 -> {
+                null
             }
             else -> {
-                layout_game_details_setup_button.visibility = View.GONE
-                layout_game_details_join_button.visibility = View.GONE
                 getString(R.string.last_move_at, DateUtils.formatDateTime(this, details.lastMoveAt, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME))
             }
+        }
+        if (details.canPlayerBeKicked && data.pendingActions.isEmpty() &&
+                details.playerIndex != null && details.playerIndex > 0) {
+            if (details.playerIndex != details.currentPlayer) {
+                layout_game_details_kick_button.visibility = View.VISIBLE
+            } else {
+                layout_game_details_kick_warning.visibility = View.VISIBLE
+            }
+        }
+        if (data.pendingActions.isNotEmpty()) {
+            layout_game_details_pending_actions.setOnClickListener {
+                val hash = data.pendingActions.first().hash
+                startActivity(Intent(Intent.ACTION_VIEW).apply { this.data = Uri.parse("${BuildConfig.ETHERSCAN_TX_URL}${hash.asTransactionHash()}") })
+            }
+        } else {
+            layout_game_details_pending_actions.setOnClickListener(null)
         }
         details.playerIndex?.let {
             val pendingMoves = arrayListOf(-1, -1, -1, -1, -1, -1, -1, -1, -1)

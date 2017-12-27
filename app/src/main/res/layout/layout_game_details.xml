@@ -151,6 +151,50 @@
                 android:padding="8dp"
                 tools:text="@string/you_are_player_x" />
 
+            <TextView
+                android:id="@+id/layout_game_details_kick_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/layout_game_details_cancel_button"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_gravity="end"
+                android:background="@drawable/selectable_background"
+                android:padding="8dp"
+                android:text="@string/kick_player"
+                android:textColor="@color/colorAccent"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/layout_game_details_kick_warning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/layout_game_details_cancel_button"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_gravity="end"
+                android:padding="8dp"
+                android:text="@string/kick_warning"
+                android:textColor="@color/error"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/layout_game_details_cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/layout_game_details_pending_actions"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_gravity="end"
+                android:background="@drawable/selectable_background"
+                android:padding="8dp"
+                android:text="@string/cancel_game"
+                android:textColor="@color/colorAccent"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/layout_game_details_pending_actions"
@@ -162,6 +206,7 @@
                 android:layout_alignWithParentIfMissing="true"
                 android:layout_toEndOf="@id/layout_game_details_player_info"
                 android:layout_toRightOf="@id/layout_game_details_player_info"
+                android:background="@drawable/selectable_background"
                 android:gravity="end"
                 android:padding="8dp"
                 tools:text="@string/x_pending_actions" />

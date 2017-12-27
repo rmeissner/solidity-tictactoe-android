@@ -61,8 +61,10 @@ class EthereumGameRepository @Inject constructor(
                         rpcApi.bulk(GameInfoRequest(
                                 SubRequest(TransactionCallParams(to = BuildConfig.GAME_ADDRESS, data = TicTacToe.GetGameInfo.encode(Solidity.UInt256(gameId))).callRequest(1),
                                         { TicTacToe.GetGameInfo.decode(it.checkedResult()).param0.value.toString(2).padStart(64, '0') }),
+                                SubRequest(TransactionCallParams(to = BuildConfig.GAME_ADDRESS, data = TicTacToe.CanCurrentPlayerBePunished.encode(Solidity.UInt256(gameId))).callRequest(2),
+                                        { TicTacToe.CanCurrentPlayerBePunished.decode(it.checkedResult()).param0.value }),
                                 from?.let {
-                                    SubRequest(TransactionCallParams(from = it, to = BuildConfig.GAME_ADDRESS, data = TicTacToe.SenderPlayerIndex.encode(Solidity.UInt256(gameId))).callRequest(2),
+                                    SubRequest(TransactionCallParams(from = it, to = BuildConfig.GAME_ADDRESS, data = TicTacToe.SenderPlayerIndex.encode(Solidity.UInt256(gameId))).callRequest(3),
                                             { TicTacToe.SenderPlayerIndex.decode(it.checkedResult()).param0.value.toInt() })
                                 }
 
@@ -84,7 +86,7 @@ class EthereumGameRepository @Inject constructor(
                                         playerIndex = remotePlayerIndex
                                         gameDao.insert(GameDb(gameId, localGame?.joinedAt ?: System.currentTimeMillis(), remotePlayerIndex))
                                     }
-                                    GameInfo(field, currentPlayer, lastMove, state, playerIndex)
+                                    GameInfo(field, currentPlayer, lastMove, state, playerIndex, it.canPlayerBePunished.value ?: false)
                                 }
                     }
 
@@ -167,6 +169,48 @@ class EthereumGameRepository @Inject constructor(
                                 }
                     }
 
+    private fun buildCancelParams(gameId: BigInteger, account: Account): TransactionCallParams {
+        val from = account.address.asEthereumAddressString()
+        val data = TicTacToe.Cancel.encode(Solidity.UInt256(gameId))
+        return TransactionCallParams(from = from, to = BuildConfig.GAME_ADDRESS, data = data)
+    }
+
+    override fun estimateCancelGame(gameId: BigInteger): Observable<Wei> =
+            estimate { buildCancelParams(gameId, it) }.map { Wei(it.value) }
+
+    override fun cancelGame(gameId: BigInteger): Observable<String> =
+            gameDao.pendingInteactionsCount(gameId)
+                    .subscribeOn(Schedulers.io())
+                    .flatMapObservable {
+                        if (it > 0) Observable.error<String>(IllegalStateException())
+                        else publish { buildCancelParams(gameId, it) }
+                                .map {
+                                    gameDao.insert(PendingInteactionDb.cancel(it.hexAsBigInteger(), gameId))
+                                    it
+                                }
+                    }
+
+    private fun buildKickParams(gameId: BigInteger, account: Account): TransactionCallParams {
+        val from = account.address.asEthereumAddressString()
+        val data = TicTacToe.PunishCurrentPlayer.encode(Solidity.UInt256(gameId))
+        return TransactionCallParams(from = from, to = BuildConfig.GAME_ADDRESS, data = data)
+    }
+
+    override fun estimateKickPlayer(gameId: BigInteger): Observable<Wei> =
+            estimate { buildKickParams(gameId, it) }.map { Wei(it.value) }
+
+    override fun kickPlayer(gameId: BigInteger): Observable<String> =
+            gameDao.pendingInteactionsCount(gameId)
+                    .subscribeOn(Schedulers.io())
+                    .flatMapObservable {
+                        if (it > 0) Observable.error<String>(IllegalStateException())
+                        else publish { buildKickParams(gameId, it) }
+                                .map {
+                                    gameDao.insert(PendingInteactionDb.kick(it.hexAsBigInteger(), gameId))
+                                    it
+                                }
+                    }
+
     private fun getTransactionParameters(transactionCallParams: TransactionCallParams): Observable<TransactionParameters> {
         val request = TransactionParametersRequest(
                 SubRequest(JsonRpcRequest(id = 0, method = "eth_estimateGas", params = arrayListOf(transactionCallParams)), { it.checkedResult().hexAsBigInteger() }),
@@ -176,7 +220,7 @@ class EthereumGameRepository @Inject constructor(
         return rpcApi.bulk(request).map {
             val adjustedGas = BigDecimal.valueOf(2)
                     .multiply(BigDecimal(it.estimatedGas.value)).setScale(0, BigDecimal.ROUND_UP).unscaledValue()
-            TransactionParameters(adjustedGas, it.gasPrice.value!!, it.transactionCount.value!!)
+            TransactionParameters(adjustedGas, adjustGasPrice(it.gasPrice.value!!), it.transactionCount.value!!)
         }
     }
 
@@ -220,6 +264,10 @@ class EthereumGameRepository @Inject constructor(
                                     JoinPendingAction(entry.transactionHash)
                                 entry.action.startsWith(PendingInteactionDb.ACTION_MAKE_MOVE) ->
                                     entry.action.substring(1).toIntOrNull()?.let { MakeMovePendingAction(entry.transactionHash, it) }
+                                entry.action.startsWith(PendingInteactionDb.ACTION_CANCEL) ->
+                                    CancelPendingAction(entry.transactionHash)
+                                entry.action.startsWith(PendingInteactionDb.ACTION_KICK) ->
+                                    KickPendingAction(entry.transactionHash)
                                 else -> null
                             }
                         }
@@ -244,14 +292,14 @@ class EthereumGameRepository @Inject constructor(
                                         method = FUNCTION_GET_BALANCE,
                                         params = arrayListOf(it.address.asEthereumAddressString(), DEFAULT_BLOCK_LATEST)))
                                 .map { Wei(it.checkedResult().hexAsBigInteger()) }
-                                .repeatWhen {  it.delay(10, TimeUnit.SECONDS) }
+                                .repeatWhen { it.delay(10, TimeUnit.SECONDS) }
                                 .retryWhen { it.delay(20, TimeUnit.SECONDS) }
                     }
 
     private class TransactionParametersRequest(val estimatedGas: SubRequest<BigInteger>, val gasPrice: SubRequest<BigInteger>, val transactionCount: SubRequest<BigInteger>) :
             BulkRequest(estimatedGas, gasPrice, transactionCount)
 
-    private class GameInfoRequest(val state: SubRequest<String>, val playerIndex: SubRequest<Int>?) : BulkRequest(state, playerIndex)
+    private class GameInfoRequest(val state: SubRequest<String>, val canPlayerBePunished: SubRequest<Boolean>, val playerIndex: SubRequest<Int>?) : BulkRequest(state, canPlayerBePunished, playerIndex)
 
     private fun JsonRpcTransactionReceiptResult.checkedResult(): TransactionReceipt? {
         error?.let {
@@ -260,6 +308,9 @@ class EthereumGameRepository @Inject constructor(
         return result
     }
 
+    private fun adjustGasPrice(price: BigInteger) =
+            if (GAS_PRICE_OVERRIDE > BigInteger.ZERO) GAS_PRICE_OVERRIDE else price
+
     companion object {
         const val DEFAULT_BLOCK_EARLIEST = "earliest"
         const val DEFAULT_BLOCK_LATEST = "latest"
@@ -267,6 +318,7 @@ class EthereumGameRepository @Inject constructor(
 
         const val FUNCTION_GET_BALANCE = "eth_getBalance"
 
+        private val GAS_PRICE_OVERRIDE = nullOnThrow { BigInteger.valueOf(BuildConfig.GAS_PRICE_OVERRIDE) } ?: BigInteger.ZERO
         private val ONE_ETHER = BigInteger.TEN.pow(18)
         private val ONE_ETHER_STRING = "0x${ONE_ETHER.toString(16)}"
     }

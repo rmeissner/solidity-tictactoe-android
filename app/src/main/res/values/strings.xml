@@ -29,6 +29,8 @@
     <string name="setup_account_game">Setup account to join game</string>
     <string name="game_not_started">Game has not yet started!</string>
     <string name="joining_game">Joining Game!</string>
+    <string name="canceling_game">Canceling Game!</string>
+    <string name="kicking_player">Kicking other player!</string>
     <string name="move_published">Move was published. Please wait for update or refresh manually!</string>
     <string name="tab_title_create">Create Game</string>
     <string name="tab_title_open">Open Game</string>
@@ -53,6 +55,8 @@
     <string name="estimate">Estimate</string>
     <string name="description_join">By confirming this transaction you will stake <b>1 Ξ</b> and join <b>Game %s</b> as Player 2. Your stake will be included in the displayed costs.</string>
     <string name="description_make_move">By confirming this transaction you will make your move on the <b>%s</b> field</string>
+    <string name="description_cancel">By confirming this transaction you will cancel <b>Game %s</b>. Your stake of <b>1 Ξ</b> will be refunded.</string>
+    <string name="description_kick">By confirming this transaction you will kick the other player from <b>Game %s</b> und you will be the winner.</string>
     <string name="top_left">top left</string>
     <string name="center_left">center left</string>
     <string name="top_center">top center</string>
@@ -63,4 +67,13 @@
     <string name="bottom_right">bottom right</string>
     <string name="center_right">center right</string>
     <string name="unknown">unknown</string>
+    <string name="cancel_game">Cancel Game</string>
+    <string name="game_canceled">Game was canceled</string>
+    <string name="kick_player">Kick other Player</string>
+    <string name="kick_warning">You are too slow and might be kicked!</string>
+    <string name="create_game_tutorial_title">How to create a Game!</string>
+    <string name="create_game_tutorial_text_1">1. Setup an account (button in the bottom)</string>
+    <string name="create_game_tutorial_text_2">2. Fund account (see balance on the top, click to copy address)</string>
+    <string name="create_game_tutorial_text_3">3. Create a game (button in the bottom after account setup)</string>
+    <string name="create_game_tutorial_text_4">4. Share Game Id with other Player (title of the entry after game has been created: e.g. 1 for Game 1)</string>
 </resources>

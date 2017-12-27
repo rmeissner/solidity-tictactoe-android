@@ -11,8 +11,7 @@ import de.thegerman.sttt.R
 import de.thegerman.sttt.StttApplication
 import de.thegerman.sttt.di.components.DaggerViewComponent
 import de.thegerman.sttt.di.modules.ViewModule
-import de.thegerman.sttt.ui.transactions.TransactionConfirmationContract.Action.Join
-import de.thegerman.sttt.ui.transactions.TransactionConfirmationContract.Action.MakeMove
+import de.thegerman.sttt.ui.transactions.TransactionConfirmationContract.Action.*
 import de.thegerman.sttt.utils.displayString
 import de.thegerman.sttt.utils.subscribeForResult
 import io.reactivex.Observable
@@ -56,6 +55,8 @@ class TransactionConfirmationDialog : BottomSheetDialogFragment() {
         action = when (arguments?.getInt(KEY_TYPE)) {
             TYPE_JOIN -> Join()
             TYPE_MOVE -> arguments?.getInt(KEY_MOVE_FIELD)?.let { MakeMove(it) }
+            TYPE_CANCEL -> Cancel()
+            TYPE_KICK-> Kick()
             else -> null
         } ?: run {
             dismiss()
@@ -70,8 +71,10 @@ class TransactionConfirmationDialog : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         val action = this.action
         layout_confirm_transaction_description.text = when (action) {
-            is TransactionConfirmationContract.Action.Join -> getString(R.string.description_join, gameId.asDecimalString())
-            is TransactionConfirmationContract.Action.MakeMove -> getString(R.string.description_make_move, fieldName(action.field))
+            is Join -> getString(R.string.description_join, gameId.asDecimalString())
+            is MakeMove -> getString(R.string.description_make_move, fieldName(action.field))
+            is Cancel -> getString(R.string.description_cancel, gameId.asDecimalString())
+            is Kick -> getString(R.string.description_kick, gameId.asDecimalString())
         }
     }
 
@@ -148,6 +151,8 @@ class TransactionConfirmationDialog : BottomSheetDialogFragment() {
         private const val KEY_TYPE = "argument.int.type"
         private const val TYPE_JOIN = 0
         private const val TYPE_MOVE = 1
+        private const val TYPE_CANCEL = 2
+        private const val TYPE_KICK = 3
 
         private fun createBundle(gameId: BigInteger, type: Int) =
                 Bundle().apply {
@@ -157,6 +162,14 @@ class TransactionConfirmationDialog : BottomSheetDialogFragment() {
 
         fun confirmJoin(gameId: BigInteger) = TransactionConfirmationDialog().apply {
             arguments = createBundle(gameId, TYPE_JOIN)
+        }
+
+        fun confirmCancel(gameId: BigInteger) = TransactionConfirmationDialog().apply {
+            arguments = createBundle(gameId, TYPE_CANCEL)
+        }
+
+        fun confirmKick(gameId: BigInteger) = TransactionConfirmationDialog().apply {
+            arguments = createBundle(gameId, TYPE_KICK)
         }
 
         fun confirmMove(gameId: BigInteger, field: Int) = TransactionConfirmationDialog().apply {
