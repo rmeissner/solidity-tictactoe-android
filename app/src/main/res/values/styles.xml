@@ -24,4 +24,12 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="TransactionConfirmationDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/TransactionConfirmationDialogModal</item>
+    </style>
+
+    <style name="TransactionConfirmationDialogModal" parent="Widget.Design.BottomSheet.Modal">
+        <item name="behavior_peekHeight">500dp</item>
+    </style>
+
 </resources>

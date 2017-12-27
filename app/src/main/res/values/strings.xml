@@ -33,9 +33,9 @@
     <string name="tab_title_create">Create Game</string>
     <string name="tab_title_open">Open Game</string>
     <string name="create_game">Create Game</string>
-    <string name="creation_description_1">Creating a game will require 1 ETH in addition to the normal transaction fees.</string>
-    <string name="creation_description_2">Once a game has been created another player can join. For this it is again necessary to pay 1 ETH</string>
-    <string name="creation_description_3">The winner will receive 2 ETH or in case of a Tie each player gets their 1 ETH refunded.</string>
+    <string name="creation_description_1">Creating a game will require 1 Ξ in addition to the normal transaction fees.</string>
+    <string name="creation_description_2">Once a game has been created another player can join. For this it is again necessary to pay 1 Ξ</string>
+    <string name="creation_description_3">The winner will receive 2 Ξ or in case of a Tie each player gets their 1 Ξ refunded.</string>
     <string name="joined_at">Joined at %s</string>
     <string name="published_at">Published at %s</string>
     <string name="x_pending_actions">%s pending actions</string>
@@ -45,4 +45,22 @@
     <string name="x_ether">%s Ξ</string>
     <string name="x_wei">%s Wei</string>
     <string name="x_gwei">%s GWei</string>
+    <string name="costs_loading">Costs: loading…</string>
+    <string name="costs_estimate">Costs: ~%s</string>
+    <string name="costs_error">Costs: error loading</string>
+    <string name="costs_error_retry">Costs: error. Click to retry!</string>
+    <string name="confirm">Confirm</string>
+    <string name="estimate">Estimate</string>
+    <string name="description_join">By confirming this transaction you will stake <b>1 Ξ</b> and join <b>Game %s</b> as Player 2. Your stake will be included in the displayed costs.</string>
+    <string name="description_make_move">By confirming this transaction you will make your move on the <b>%s</b> field</string>
+    <string name="top_left">top left</string>
+    <string name="center_left">center left</string>
+    <string name="top_center">top center</string>
+    <string name="bottom_left">bottom left</string>
+    <string name="bottom_center">bottom center</string>
+    <string name="center">center</string>
+    <string name="top_right">top right</string>
+    <string name="bottom_right">bottom right</string>
+    <string name="center_right">center right</string>
+    <string name="unknown">unknown</string>
 </resources>

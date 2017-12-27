@@ -8,6 +8,7 @@ import de.thegerman.sttt.ui.games.add.AddGameActivity
 import de.thegerman.sttt.ui.games.add.create.CreateGameFragment
 import de.thegerman.sttt.ui.games.details.DetailsActivity
 import de.thegerman.sttt.ui.games.overview.OverviewActivity
+import de.thegerman.sttt.ui.transactions.TransactionConfirmationDialog
 import pm.gnosis.heimdall.common.di.ForView
 
 @ForView
@@ -16,6 +17,11 @@ import pm.gnosis.heimdall.common.di.ForView
         modules = [ViewModule::class]
 )
 interface ViewComponent {
+    /*
+        Dialogs
+     */
+
+    fun inject(dialog: TransactionConfirmationDialog)
     /*
         Fragments
      */

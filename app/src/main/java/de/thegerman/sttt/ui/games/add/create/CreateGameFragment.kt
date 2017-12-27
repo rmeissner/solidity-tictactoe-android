@@ -12,6 +12,7 @@ import de.thegerman.sttt.di.components.DaggerViewComponent
 import de.thegerman.sttt.di.modules.ViewModule
 import de.thegerman.sttt.ui.base.InjectedFragment
 import de.thegerman.sttt.ui.games.overview.OverviewActivity
+import de.thegerman.sttt.utils.displayString
 import de.thegerman.sttt.utils.subscribeForResult
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -37,6 +38,18 @@ class CreateGameFragment : InjectedFragment() {
 
     override fun onStart() {
         super.onStart()
+        layout_create_game_create_button.isEnabled = false
+        disposables += layout_create_game_estimate.clicks().startWith(Unit)
+                .doOnNext { layout_create_game_estimate.text = getString(R.string.costs_loading) }
+                .compose(viewModel.estimateTransformer())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeForResult({
+                    layout_create_game_estimate.text = getString(R.string.costs_estimate, it.displayString(context!!))
+                    layout_create_game_create_button.isEnabled = true
+                }, {
+                    layout_create_game_estimate.text = getString(R.string.costs_error_retry)
+                    Timber.e(it)
+                })
         disposables += layout_create_game_create_button.clicks()
                 .doOnNext { layout_create_game_create_button.isEnabled = false }
                 .compose(viewModel.createTransformer())

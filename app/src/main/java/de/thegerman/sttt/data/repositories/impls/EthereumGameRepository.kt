@@ -115,7 +115,7 @@ class EthereumGameRepository @Inject constructor(
     }
 
     override fun estimateJoinGame(gameId: BigInteger): Observable<Wei> =
-            estimate { buildJoinParams(gameId, it) }
+            estimate { buildJoinParams(gameId, it) }.map { Wei(it.value + ONE_ETHER) }
 
     override fun joinGame(gameId: BigInteger): Observable<String> =
             gameDao.pendingInteactionsCount(gameId)
@@ -137,7 +137,7 @@ class EthereumGameRepository @Inject constructor(
     }
 
     override fun estimateCreateGame(): Observable<Wei> =
-            estimate { buildCreateParams(it) }
+            estimate { buildCreateParams(it) }.map { Wei(it.value + ONE_ETHER) }
 
     override fun createGame(): Observable<String> =
             publish { buildCreateParams(it) }
@@ -267,6 +267,7 @@ class EthereumGameRepository @Inject constructor(
 
         const val FUNCTION_GET_BALANCE = "eth_getBalance"
 
-        val ONE_ETHER_STRING = "0x${BigInteger.TEN.pow(18).toString(16)}"
+        private val ONE_ETHER = BigInteger.TEN.pow(18)
+        private val ONE_ETHER_STRING = "0x${ONE_ETHER.toString(16)}"
     }
 }

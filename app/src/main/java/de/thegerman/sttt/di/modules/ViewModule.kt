@@ -13,6 +13,7 @@ import de.thegerman.sttt.ui.account.unlock.UnlockContract
 import de.thegerman.sttt.ui.games.add.create.CreateGameContract
 import de.thegerman.sttt.ui.games.details.DetailsContract
 import de.thegerman.sttt.ui.games.overview.OverviewContract
+import de.thegerman.sttt.ui.transactions.TransactionConfirmationContract
 import pm.gnosis.heimdall.common.di.ForView
 import pm.gnosis.heimdall.common.di.ViewContext
 
@@ -31,7 +32,6 @@ class ViewModule(private val context: Context) {
     @ForView
     fun providesAccountSetupContract(provider: ViewModelProvider) = provider[AccountSetupContract::class.java]
 
-
     @Provides
     @ForView
     fun providesCreateGameContract(provider: ViewModelProvider) = provider[CreateGameContract::class.java]
@@ -43,6 +43,10 @@ class ViewModule(private val context: Context) {
     @Provides
     @ForView
     fun providesOverviewContract(provider: ViewModelProvider) = provider[OverviewContract::class.java]
+
+    @Provides
+    @ForView
+    fun providesTransactionConfirmationContract(provider: ViewModelProvider) = provider[TransactionConfirmationContract::class.java]
 
     @Provides
     @ForView

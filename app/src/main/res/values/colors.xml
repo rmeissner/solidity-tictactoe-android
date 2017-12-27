@@ -4,9 +4,11 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="tabsBackground">#4757bc</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorAccentDark">#bf1d54</color>
     <color name="error">#b4010d</color>
     <color name="white">#ffffff</color>
     <color name="white_alpha_70">#b3ffffff</color>
     <color name="move">#000000</color>
     <color name="pending_move">#888888</color>
+    <color name="pressed_shade">#33000000</color>
 </resources>

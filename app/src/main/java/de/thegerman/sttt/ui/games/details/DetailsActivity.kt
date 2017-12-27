@@ -20,6 +20,7 @@ import de.thegerman.sttt.di.components.DaggerViewComponent
 import de.thegerman.sttt.di.modules.ViewModule
 import de.thegerman.sttt.ui.account.setup.AccountSetupActivity
 import de.thegerman.sttt.ui.base.InjectedActivity
+import de.thegerman.sttt.ui.transactions.TransactionConfirmationDialog
 import de.thegerman.sttt.utils.subscribeForResult
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -75,14 +76,9 @@ class DetailsActivity : InjectedActivity() {
                     startActivity(AccountSetupActivity.createIntent(this))
                 }, Timber::e)
         disposables += layout_game_details_join_button.clicks()
-                .compose(viewModel.joinTransformer())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeForResult({
-                    layout_game_details_join_button.visibility = View.GONE
-                }, {
-                    snackbar(layout_game_details_join_button, R.string.error_unknown)
-                    Timber.e(it)
-                })
+                .subscribe({
+                    TransactionConfirmationDialog.confirmJoin(gameIndex!!).show(supportFragmentManager, null)
+                }, Timber::e)
         disposables += makeMove(
                 layout_game_details_field_0.clicks().map { 0 },
                 layout_game_details_field_1.clicks().map { 1 },
@@ -99,17 +95,9 @@ class DetailsActivity : InjectedActivity() {
     private fun makeMove(vararg inputs: Observable<Int>) =
             Observable.merge(mutableListOf(*inputs))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext { toggleFields(false) }
-                    .compose(viewModel.makeMoveTransformer())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeForResult({
-                        snackbar(layout_game_details_join_button, getString(R.string.move_published))
-                    }, {
-                        toggleFields(true)
-                        snackbar(layout_game_details_join_button, R.string.error_unknown)
-                        Timber.e(it)
-                    })
-
+                    .subscribe({
+                        TransactionConfirmationDialog.confirmMove(gameIndex!!, it).show(supportFragmentManager, null)
+                    }, Timber::e)
 
     private fun onGameDetailsError(throwable: Throwable) {
         if (!hasGameInfo) {
@@ -172,7 +160,7 @@ class DetailsActivity : InjectedActivity() {
             updateFields(pendingMoves, ContextCompat.getColor(this, R.color.pending_move))
         }
         updateFields(details.fields)
-        toggleFields(details.playerIndex == details.currentPlayer)
+        toggleFields(details.playerIndex == details.currentPlayer && data.pendingActions.isEmpty())
     }
 
     private fun toggleFields(enabled: Boolean) {

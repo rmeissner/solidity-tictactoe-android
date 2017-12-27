@@ -37,21 +37,7 @@ class DetailsViewModel @Inject constructor(
 
     }
 
-    override fun joinTransformer() = ObservableTransformer<Unit, Result<String>> {
-        it.switchMap {
-            gameRepository.joinGame(gameId!!)
-                    .mapToResult()
-        }
-    }
-
-    override fun makeMoveTransformer() = ObservableTransformer<Int, Result<String>> {
-        it.switchMap {
-            gameRepository.makeMove(gameId!!, it)
-                    .mapToResult()
-        }
-    }
-
-    private fun <T> flatMapForRepeat(it: Observable<T>, delayS: Long = 10): Observable<T> =
+    private fun <T> flatMapForRepeat(it: Observable<T>, delayS: Long = 5): Observable<T> =
             it.flatMap {
                 if (gameOver.get()) Observable.empty<T>()
                 else Observable.just(it).delay(delayS, TimeUnit.SECONDS)

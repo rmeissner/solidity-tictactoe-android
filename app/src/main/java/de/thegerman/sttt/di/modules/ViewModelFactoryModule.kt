@@ -18,6 +18,8 @@ import de.thegerman.sttt.ui.games.details.DetailsContract
 import de.thegerman.sttt.ui.games.details.DetailsViewModel
 import de.thegerman.sttt.ui.games.overview.OverviewContract
 import de.thegerman.sttt.ui.games.overview.OverviewViewModel
+import de.thegerman.sttt.ui.transactions.TransactionConfirmViewModel
+import de.thegerman.sttt.ui.transactions.TransactionConfirmationContract
 import javax.inject.Singleton
 
 @Module
@@ -41,6 +43,11 @@ abstract class ViewModelFactoryModule {
     @IntoMap
     @ViewModelKey(OverviewContract::class)
     abstract fun bindsOverviewContract(viewModel: OverviewViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TransactionConfirmationContract::class)
+    abstract fun bindsTransactionConfirmationContract(viewModel: TransactionConfirmViewModel): ViewModel
 
     @Binds
     @IntoMap
