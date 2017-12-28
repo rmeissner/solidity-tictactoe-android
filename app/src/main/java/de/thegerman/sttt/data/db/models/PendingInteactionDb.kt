@@ -30,7 +30,7 @@ data class PendingInteactionDb(
         const val ACTION_JOIN = "J"
         const val ACTION_MAKE_MOVE = "M"
         const val ACTION_CANCEL = "C"
-        const val ACTION_KICK = "C"
+        const val ACTION_KICK = "K"
         fun join(txHash: BigInteger, gameId: BigInteger) = PendingInteactionDb(txHash, gameId, System.currentTimeMillis(), ACTION_JOIN)
         fun makeMove(txHash: BigInteger, gameId: BigInteger, field: Int) = PendingInteactionDb(txHash, gameId, System.currentTimeMillis(), "$ACTION_MAKE_MOVE$field")
         fun cancel(txHash: BigInteger, gameId: BigInteger) = PendingInteactionDb(txHash, gameId, System.currentTimeMillis(), ACTION_CANCEL)
