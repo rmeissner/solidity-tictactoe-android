@@ -17,6 +17,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
+        project.ext.set("archivesBaseName", String.format("solidity-tictactoe-%s", defaultConfig.versionCode))
+
         buildConfigField javaTypes.STRING, "GAME_ADDRESS", asString(getKey("GAME_ADDRESS", "0xbc8d600F956D39F9533b3526E3c7E3e4f117f14d"))
         buildConfigField javaTypes.STRING, "BLOCKCHAIN_NET_URL", asString(getKey("BLOCKCHAIN_NET_URL", "https://kovan.infura.io/"))
         buildConfigField javaTypes.STRING, "INFURA_API_KEY", asString(getKey("INFURA_API_KEY", ""))
