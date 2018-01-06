@@ -63,8 +63,10 @@ class EthereumGameRepository @Inject constructor(
                                         { TicTacToe.GetGameInfo.decode(it.checkedResult()).param0.value.toString(2).padStart(64, '0') }),
                                 SubRequest(TransactionCallParams(to = BuildConfig.GAME_ADDRESS, data = TicTacToe.CanCurrentPlayerBePunished.encode(Solidity.UInt256(gameId))).callRequest(2),
                                         { TicTacToe.CanCurrentPlayerBePunished.decode(it.checkedResult()).param0.value }),
+                                SubRequest(TransactionCallParams(to = BuildConfig.GAME_ADDRESS, data = TicTacToe.MOVE_TIME_SECONDS.encode()).callRequest(3),
+                                        { TicTacToe.MOVE_TIME_SECONDS.decode(it.checkedResult()).param0.value.toLong() * 1000 }),
                                 from?.let {
-                                    SubRequest(TransactionCallParams(from = it, to = BuildConfig.GAME_ADDRESS, data = TicTacToe.SenderPlayerIndex.encode(Solidity.UInt256(gameId))).callRequest(3),
+                                    SubRequest(TransactionCallParams(from = it, to = BuildConfig.GAME_ADDRESS, data = TicTacToe.SenderPlayerIndex.encode(Solidity.UInt256(gameId))).callRequest(4),
                                             { TicTacToe.SenderPlayerIndex.decode(it.checkedResult()).param0.value.toInt() })
                                 }
 
@@ -86,7 +88,7 @@ class EthereumGameRepository @Inject constructor(
                                         playerIndex = remotePlayerIndex
                                         gameDao.insert(GameDb(gameId, localGame?.joinedAt ?: System.currentTimeMillis(), remotePlayerIndex))
                                     }
-                                    GameInfo(field, currentPlayer, lastMove, state, playerIndex, it.canPlayerBePunished.value ?: false)
+                                    GameInfo(field, currentPlayer, lastMove, it.maxMoveTime.value!!, state, playerIndex, it.canPlayerBePunished.value ?: false)
                                 }
                     }
 
@@ -299,7 +301,12 @@ class EthereumGameRepository @Inject constructor(
     private class TransactionParametersRequest(val estimatedGas: SubRequest<BigInteger>, val gasPrice: SubRequest<BigInteger>, val transactionCount: SubRequest<BigInteger>) :
             BulkRequest(estimatedGas, gasPrice, transactionCount)
 
-    private class GameInfoRequest(val state: SubRequest<String>, val canPlayerBePunished: SubRequest<Boolean>, val playerIndex: SubRequest<Int>?) : BulkRequest(state, canPlayerBePunished, playerIndex)
+    private class GameInfoRequest(
+            val state: SubRequest<String>,
+            val canPlayerBePunished: SubRequest<Boolean>,
+            val maxMoveTime: SubRequest<Long>,
+            val playerIndex: SubRequest<Int>?
+    ) : BulkRequest(state, canPlayerBePunished, maxMoveTime, playerIndex)
 
     private fun JsonRpcTransactionReceiptResult.checkedResult(): TransactionReceipt? {
         error?.let {

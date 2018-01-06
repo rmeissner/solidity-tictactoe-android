@@ -26,8 +26,10 @@ import de.thegerman.sttt.ui.account.setup.AccountSetupActivity
 import de.thegerman.sttt.ui.base.InjectedActivity
 import de.thegerman.sttt.ui.transactions.TransactionConfirmationDialog
 import de.thegerman.sttt.utils.subscribeForResult
+import de.thegerman.sttt.utils.toVisibility
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.layout_game_details.*
 import pm.gnosis.heimdall.common.utils.snackbar
@@ -36,12 +38,15 @@ import pm.gnosis.utils.asTransactionHash
 import pm.gnosis.utils.hexAsBigIntegerOrNull
 import timber.log.Timber
 import java.math.BigInteger
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class DetailsActivity : InjectedActivity() {
 
     @Inject
     lateinit var viewModel: DetailsContract
+
+    private var timer: Disposable? = null
 
     private var gameIndex: BigInteger? = null
     private var hasGameInfo: Boolean = false
@@ -68,7 +73,6 @@ class DetailsActivity : InjectedActivity() {
 
     override fun onStart() {
         super.onStart()
-        layout_game_details_setup_button.visibility = View.GONE
         layout_game_details_join_button.visibility = View.GONE
         disposables += layout_game_details_refresh_layout.refreshes()
                 .doOnSubscribe { layout_game_details_refresh_layout.isRefreshing = true }
@@ -76,10 +80,6 @@ class DetailsActivity : InjectedActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { layout_game_details_refresh_layout.isRefreshing = false }
                 .subscribeForResult(::onGameDetails, ::onGameDetailsError)
-        disposables += layout_game_details_setup_button.clicks()
-                .subscribe({
-                    startActivity(AccountSetupActivity.createIntent(this))
-                }, Timber::e)
         disposables += layout_game_details_join_button.clicks()
                 .subscribe({
                     TransactionConfirmationDialog.confirmJoin(gameIndex!!).show(supportFragmentManager, null)
@@ -113,6 +113,7 @@ class DetailsActivity : InjectedActivity() {
                     }, Timber::e)
 
     private fun onGameDetailsError(throwable: Throwable) {
+        Timber.e(throwable)
         if (!hasGameInfo) {
             layout_game_details_state.text = getString(R.string.error_game_info)
             layout_game_details_last_move.text = null
@@ -121,9 +122,11 @@ class DetailsActivity : InjectedActivity() {
     }
 
     private fun onGameDetails(data: DetailsContract.GameData) {
+        timer?.dispose()
         val details = data.info
         hasGameInfo = true
-        layout_game_details_pending_actions.text = getString(R.string.x_pending_actions, data.pendingActions.size.toString())
+        layout_game_details_pending_actions.visibility = data.pendingActions.isNotEmpty().toVisibility()
+        layout_game_details_player_icon.visibility = View.GONE
         layout_game_details_player_info.text = when (details.playerIndex) {
             null -> {
                 null
@@ -132,6 +135,8 @@ class DetailsActivity : InjectedActivity() {
                 getString(R.string.not_player_of_game)
             }
             else -> {
+                layout_game_details_player_icon.visibility = View.VISIBLE
+                layout_game_details_player_icon.setImageDrawable(ContextCompat.getDrawable(this, if (details.playerIndex == 1) R.drawable.ic_player_1 else R.drawable.ic_player_2))
                 getString(R.string.you_are_player_x, details.playerIndex.toString())
             }
         }
@@ -148,7 +153,6 @@ class DetailsActivity : InjectedActivity() {
         val isCanceling = data.pendingActions.any { it is CancelPendingAction }
         val isKicking = data.pendingActions.any { it is KickPendingAction }
 
-        layout_game_details_setup_button.visibility = View.GONE
         layout_game_details_join_button.visibility = View.GONE
         layout_game_details_cancel_button.visibility = View.GONE
         layout_game_details_kick_button.visibility = View.GONE
@@ -159,8 +163,6 @@ class DetailsActivity : InjectedActivity() {
                 details.playerIndex?.let {
                     layout_game_details_join_button.visibility = if (it == 1 || isJoining) View.GONE else View.VISIBLE
                     layout_game_details_cancel_button.visibility = if (it == 1 && data.pendingActions.isEmpty()) View.VISIBLE else View.GONE
-                } ?: run {
-                    layout_game_details_setup_button.visibility = View.VISIBLE
                 }
                 getString(when {
                     isJoining -> R.string.joining_game
@@ -181,12 +183,32 @@ class DetailsActivity : InjectedActivity() {
             if (details.playerIndex != details.currentPlayer) {
                 layout_game_details_kick_button.visibility = View.VISIBLE
             } else {
+                layout_game_details_kick_warning.text = getString(R.string.kick_warning)
                 layout_game_details_kick_warning.visibility = View.VISIBLE
             }
+        } else if (details.state == 1 && details.playerIndex == details.currentPlayer &&
+                data.pendingActions.isEmpty()) {
+            layout_game_details_kick_warning.visibility = View.VISIBLE
+            updateTimeView(Math.max(0, details.lastMoveAt + details.maxMoveTime - System.currentTimeMillis()))
+            Observable.interval(1, TimeUnit.SECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map {
+                        val timeLeft = Math.max(0, details.lastMoveAt + details.maxMoveTime - System.currentTimeMillis())
+                        if (timeLeft > 0) timeLeft else throw Exception()
+                    }
+                    .subscribe({
+                        updateTimeView(it)
+                    }, {
+                        layout_game_details_kick_warning.text = getString(R.string.timer, 0, 0)
+                    })
+                    .let {
+                        timer = it
+                        disposables += it
+                    }
         }
         if (data.pendingActions.isNotEmpty()) {
             layout_game_details_pending_actions.setOnClickListener {
-                val hash = data.pendingActions.first().hash
+                val hash = data.pendingActions.last().hash
                 startActivity(Intent(Intent.ACTION_VIEW).apply { this.data = Uri.parse("${BuildConfig.ETHERSCAN_TX_URL}${hash.asTransactionHash()}") })
             }
         } else {
@@ -205,6 +227,12 @@ class DetailsActivity : InjectedActivity() {
         }
         updateFields(details.fields)
         toggleFields(details.playerIndex == details.currentPlayer && data.pendingActions.isEmpty())
+    }
+
+    private fun updateTimeView(timeLeft: Long) {
+        val minutesLeft = timeLeft / DateUtils.MINUTE_IN_MILLIS
+        val secondsLeft = (timeLeft % DateUtils.MINUTE_IN_MILLIS) / DateUtils.SECOND_IN_MILLIS
+        layout_game_details_kick_warning.text = getString(R.string.timer, minutesLeft, secondsLeft)
     }
 
     private fun toggleFields(enabled: Boolean) {

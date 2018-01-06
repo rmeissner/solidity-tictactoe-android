@@ -40,7 +40,7 @@
     <string name="creation_description_3">The winner will receive 2 Ξ or in case of a Tie each player gets their 1 Ξ refunded.</string>
     <string name="joined_at">Joined at %s</string>
     <string name="published_at">Published at %s</string>
-    <string name="x_pending_actions">%s pending actions</string>
+    <string name="processing_action">Processing action</string>
     <string name="copied_address_to_clipboard">Copied account address to clipboard!</string>
     <string name="clipboard_address_label">Solidity TicTacToe Account</string>
     <string name="copy_address_to_clipboard_error">Could not copy address to clipboard</string>
@@ -76,4 +76,5 @@
     <string name="create_game_tutorial_text_2">2. Fund account (see balance on the top, click to copy address)</string>
     <string name="create_game_tutorial_text_3">3. Create a game (button in the bottom after account setup)</string>
     <string name="create_game_tutorial_text_4">4. Share Game Id with other Player (title of the entry after game has been created: e.g. 1 for Game 1)</string>
+    <string name="timer">%d:%02d</string>
 </resources>

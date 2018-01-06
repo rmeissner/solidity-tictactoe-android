@@ -140,16 +140,32 @@
                 android:padding="8dp"
                 tools:text="Last move made yesterday" />
 
-            <TextView
-                android:id="@+id/layout_game_details_player_info"
+            <LinearLayout
+                android:id="@+id/layout_game_details_player_info_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/layout_game_details_setup_button"
+                android:layout_above="@id/layout_game_details_join_button"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignWithParentIfMissing="true"
-                android:padding="8dp"
-                tools:text="@string/you_are_player_x" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/layout_game_details_player_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/you_are_player_x" />
+
+                <ImageView
+                    android:id="@+id/layout_game_details_player_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    tools:src="@drawable/ic_player_1" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/layout_game_details_kick_button"
@@ -168,15 +184,15 @@
 
             <TextView
                 android:id="@+id/layout_game_details_kick_warning"
-                android:layout_width="wrap_content"
+                android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@id/layout_game_details_cancel_button"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignWithParentIfMissing="true"
                 android:layout_gravity="end"
+                android:gravity="end"
                 android:padding="8dp"
-                android:text="@string/kick_warning"
                 android:textColor="@color/error"
                 android:visibility="gone"
                 tools:visibility="visible" />
@@ -196,36 +212,33 @@
                 android:textColor="@color/colorAccent"
                 android:visibility="gone" />
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/layout_game_details_pending_actions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/layout_game_details_setup_button"
+                android:layout_above="@id/layout_game_details_join_button"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignWithParentIfMissing="true"
-                android:layout_toEndOf="@id/layout_game_details_player_info"
-                android:layout_toRightOf="@id/layout_game_details_player_info"
+                android:layout_toEndOf="@id/layout_game_details_player_info_container"
+                android:layout_toRightOf="@id/layout_game_details_player_info_container"
                 android:background="@drawable/selectable_background"
-                android:gravity="end"
+                android:gravity="center_vertical|end"
+                android:orientation="horizontal"
                 android:padding="8dp"
-                tools:text="@string/x_pending_actions" />
+                android:visibility="gone">
 
-            <TextView
-                android:id="@+id/layout_game_details_setup_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/layout_game_details_join_button"
-                android:layout_alignParentBottom="true"
-                android:layout_alignWithParentIfMissing="true"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/accent_selectable_background"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/setup_account_game"
-                android:textColor="@android:color/white"
-                android:visibility="gone"
-                tools:visibility="visible" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/processing_action" />
+
+                <ProgressBar
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/layout_game_details_join_button"

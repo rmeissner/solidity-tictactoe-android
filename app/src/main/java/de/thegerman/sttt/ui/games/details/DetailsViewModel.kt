@@ -37,7 +37,7 @@ class DetailsViewModel @Inject constructor(
 
     }
 
-    private fun <T> flatMapForRepeat(it: Observable<T>, delayS: Long = 5): Observable<T> =
+    private fun <T> flatMapForRepeat(it: Observable<T>, delayS: Long = 1): Observable<T> =
             it.flatMap {
                 if (gameOver.get()) Observable.empty<T>()
                 else Observable.just(it).delay(delayS, TimeUnit.SECONDS)
