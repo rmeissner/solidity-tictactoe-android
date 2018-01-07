@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Solidity TicTacToe</string>
     <string name="join">Join</string>
-    <string name="open_game">Open Game</string>
+    <string name="open_game">View Game</string>
     <string name="enter_game_id">Enter Game ID</string>
     <string name="waiting_for_player">Waiting for player to join</string>
     <string name="player_x_turn">Player %ss turn</string>
@@ -33,7 +33,7 @@
     <string name="kicking_player">Kicking other player!</string>
     <string name="move_published">Move was published. Please wait for update or refresh manually!</string>
     <string name="tab_title_create">Create Game</string>
-    <string name="tab_title_open">Open Game</string>
+    <string name="tab_title_open">Existing Game</string>
     <string name="create_game">Create Game</string>
     <string name="creation_description_1">Creating a game will require 1 Ξ in addition to the normal transaction fees.</string>
     <string name="creation_description_2">Once a game has been created another player can join. For this it is again necessary to pay 1 Ξ</string>

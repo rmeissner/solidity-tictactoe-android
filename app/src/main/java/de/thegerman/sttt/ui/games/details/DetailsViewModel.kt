@@ -28,6 +28,7 @@ class DetailsViewModel @Inject constructor(
         Observable.combineLatest(it.startWith(Unit).switchMap {
             gameRepository.loadGameDetails(gameId!!)
                     .doOnNext { gameOver.set(it.state > 1) }
+                    .retryWhen { flatMapForRepeat(it, delayS = 10) }
                     .repeatWhen { flatMapForRepeat(it) }
         }, gameRepository.observePendingActions(gameId!!).toObservable(),
                 BiFunction { info: GameInfo, actions: List<PendingAction> ->

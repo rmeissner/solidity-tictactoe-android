@@ -28,7 +28,8 @@
             </intent-filter>
         </activity>
         <activity android:name="de.thegerman.sttt.ui.games.details.DetailsActivity" />
-        <activity android:name=".ui.account.setup.AccountSetupActivity" />
+        <activity android:name=".ui.account.setup.AccountSetupActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.account.unlock.UnlockActivity"
             android:windowSoftInputMode="adjustResize" />
